@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "Sefaria",
+  "description": "Learn Torah daily!",
+  "version": "0.1",
+  "chrome_url_overrides" : {
+    "newtab": "tab.html"
+  },
+  "icons": {
+    "128": "icons/icon128.png",
+    "48": "icons/icon48.png"
+  },
+  "browser_action": {
+    "default_icon": "icons/icon48.png"
+  },
+  "permissions": [
+    "cookies"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "sefaria-chrome-extension",
+  "version": "1.0.0",
+  "description": "Sefaria's Chrome extension to view daily texts",
+  "main": "script.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "watch": "webpack --config webpack.config.js --watch --stdin --watch-aggregate-timeout=1000 --watch-poll=1000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Sefaria",
+    "Jewish",
+    "Torah",
+    "Extension"
+  ],
+  "author": "Sefaria",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "classnames": "^2.2.5",
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-class": "^3.2.2",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "webpack": "^3.10.0",
+    "webpack-bundle-tracker": "^0.2.0",
+    "webpack-node-externals": "^1.6.0",
+    "webpack-zepto": "0.0.1"
+  }
+}

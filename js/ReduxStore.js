@@ -1,5 +1,13 @@
 import { combineReducers, createStore } from 'redux';
 
+chrome.storage.sync.get('tab', data => {
+  // Notify that we saved.
+  if (data.tab) {
+    store.dispatch({type: REDUX_ACTIONS.SET_TAB, tab: data.tab});
+  }
+});
+
+
 const REDUX_ACTIONS = {
     SET_TEXT: 'SET_TEXT',
     SET_CALENDARS: 'SET_CALENDARS',
@@ -34,6 +42,7 @@ const reducer = function (state = DEFAULT_STATE, action) {
         language: action.language,
       }
     case REDUX_ACTIONS.SET_TAB:
+      chrome.storage.sync.set({'tab': action.tab}, ()=>{});
       return {
         ...state,
         tab: action.tab,

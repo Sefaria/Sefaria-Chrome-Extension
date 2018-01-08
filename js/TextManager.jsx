@@ -7,19 +7,19 @@ import TextChooser from './TextChooser';
 const TextManager = ({ onTabClick, title, titleUrl, text, calendars, tab }) => (
   <div className="mega-div">
     <div>
-      <h1>Sefaria Yomi</h1>
-      <TextTitle
-        title={title}
-        titleUrl={titleUrl}
+      <h1><a href="https://www.sefaria.org"><img className="sefaria-logo" src="icons/sefaria.svg"/></a></h1>
+      <TextChooser
+        onTabClick={onTabClick}
+        calendars={calendars}
+        tab={tab}
       />
     </div>
+    <TextTitle
+      title={title}
+      titleUrl={titleUrl}
+    />
     <TextContainer
       text={text}
-    />
-    <TextChooser
-      onTabClick={onTabClick}
-      calendars={calendars}
-      tab={tab}
     />
   </div>
 );

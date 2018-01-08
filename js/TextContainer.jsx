@@ -16,10 +16,10 @@ const TextContainer = ({ text }) => {
     const segments = text[longer].map((longSeg, i) => (
       <div className="segment" key={`${text.ref}:${i+1}`}>
         { longer === "he" || !!text.he[i] ?
-          <div className="he" dangerouslySetInnerHTML={getMarkup(text.he[i])}></div> : null
+          <div className="he heSerif" dangerouslySetInnerHTML={getMarkup(text.he[i])}></div> : null
         }
         { longer === "en" || !!text.en[i] ?
-          <div className="en" dangerouslySetInnerHTML={getMarkup(text.en[i])}></div> : null
+          <div className="en enSerif" dangerouslySetInnerHTML={getMarkup(text.en[i])}></div> : null
         }
       </div>
     ));

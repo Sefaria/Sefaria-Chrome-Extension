@@ -42,6 +42,7 @@ const flattenArray = (array) => {
 
 const getTextFromState = s => {
   if (!s.text) return null;
+  console.log("text", s.text);
   return { en: flattenArray(s.text.text), he: flattenArray(s.text.he)};
 }
 

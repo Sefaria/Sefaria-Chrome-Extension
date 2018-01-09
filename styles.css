@@ -39,6 +39,11 @@ h1 {
   padding: 0;
   justify-content: flex-start;
 }
+.text-title-outer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 .text-title {
   text-align: center;
   font-size: 25px;
@@ -56,16 +61,24 @@ h1 {
 .text-title a:hover {
   text-decoration: underline;
 }
+.text-container-outer {
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+}
+.text-container-loading {
+  padding-top: 50px;
+  text-align: center;
+  font-size: 30px;
+  font-family: 'EB Garamond', 'Crimson Text', serif;
+}
 .text-container {
   margin-left: auto;
   margin-right: auto;
-  border-radius: 5px;
   background-color: white;
-  width: 700px;
-  /*max-height: 500px;*/
-  overflow-y: auto;
+  width: 100%;
+  max-width: 700px;
   font-size: 30px;
-  padding: 20px;
   font-family: 'EB Garamond', 'Crimson Text', serif;
 }
 .he {

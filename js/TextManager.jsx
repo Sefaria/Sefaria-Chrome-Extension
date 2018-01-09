@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TextTitle from './TextTitle';
 import TextContainer from './TextContainer';
 import TextChooser from './TextChooser';
 
@@ -14,11 +13,9 @@ const TextManager = ({ onTabClick, title, titleUrl, text, calendars, tab }) => (
         tab={tab}
       />
     </div>
-    <TextTitle
+    <TextContainer
       title={title}
       titleUrl={titleUrl}
-    />
-    <TextContainer
       text={text}
     />
   </div>
@@ -27,6 +24,7 @@ const TextManager = ({ onTabClick, title, titleUrl, text, calendars, tab }) => (
 TextManager.propTypes = {
   onTabClick: PropTypes.func.isRequired,
   title:      PropTypes.string,
+  titleUrl:   PropTypes.string,
   text:       PropTypes.shape({
                 en: PropTypes.array.isRequired,
                 he: PropTypes.array.isRequired,

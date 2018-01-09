@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const TextTitle = ({ title, titleUrl }) => (
-  <h2 className="text-title">
-    <a href={ titleUrl }>
-      { title }
-    </a>
-  </h2>
+  <div className="text-title-outer">
+    <h2 className="text-title">
+      <a href={ titleUrl }>
+        { title }
+      </a>
+    </h2>
+  </div>
 );
 
 TextTitle.propTypes = {

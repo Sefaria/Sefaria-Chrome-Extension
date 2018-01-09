@@ -12,16 +12,48 @@ import TextManager from './TextManager';
 const domain = "https://www.sefaria.org";
 
 const init = () => {
-  const state = store.getState();
-  getTextForTab(state.tab);
+  chrome.storage.local.get(['tab', 'lastCleared', 'cachedCalendarDay', 'calendars'] , data => {
+    if (!!data.calendars) {
+      store.dispatch({ type: REDUX_ACTIONS.SET_CALENDARS, calendars: data.calendars });
+    }
+
+    const initTab = !!data.tab ? data.tab : "Random";
+    store.dispatch({type: REDUX_ACTIONS.SET_TAB, tab: initTab});
+    getTextForTab(initTab);
+
+    const now = new Date();
+    if (!data.lastCleared) {
+      // init lastCleared var
+      chrome.storage.local.set({lastCleared: new Date()});
+    } else {
+      const lastCleared = new Date(data.lastCleared);
+      const daysTilSecondShabbat = (7 - lastCleared.getDay()) + 7;
+      const expirationMSecs = daysTilSecondShabbat * 24 * 60 * 60 * 1000;
+      if ((now.getTime() - lastCleared.getTime()) > expirationMSecs) {
+        chrome.storage.local.clear();
+      }
+    }
+
+    if (!data.cachedCalendarDay) {
+      chrome.storage.local.set({cachedCalendarDay: (new Date()).getDay()})
+    } else if (now.getDay() !== data.cachedCalendarDay) {
+      chrome.storage.local.remove('calendars');
+      chrome.storage.local.set({cachedCalendarDay: now.getDay()});
+    }
+  });
+
   getCalendars();
 }
 
-const getTextForTab = (tab) => {
+const handleScroll = e => {
+  console.log(e);
+}
+
+const getTextForTab = tab => {
   const currTab = store.getState().tab;
   if (tab === "Random") {
     getRandomSource();
-  } else if (currTab !== tab){
+  } else {
     //calendars
     getCalendarText(tab);
   }
@@ -42,7 +74,6 @@ const flattenArray = (array) => {
 
 const getTextFromState = s => {
   if (!s.text) return null;
-  console.log("text", s.text);
   return { en: flattenArray(s.text.text), he: flattenArray(s.text.he)};
 }
 
@@ -51,19 +82,31 @@ const api2siteUrl = url => (
   url.replace('/api/texts','').replace(/\?[^/]+$/,'')
 );
 
-const onTextApi = (text, status, jqXHR) => {
+const onTextApi = (text, status, jqXHR, fromCache) => {
   store.dispatch({type: REDUX_ACTIONS.SET_TEXT, text});
   const siteUrl = api2siteUrl(jqXHR.responseURL);
   store.dispatch({ type: REDUX_ACTIONS.SET_TITLE_URL, titleUrl: siteUrl });
+  if (!fromCache) {
+    console.log("responseURL", jqXHR.responseURL);
+    chrome.storage.local.set({[jqXHR.responseURL]: { text, jqXHR: { responseURL: jqXHR.responseURL } }});
+  }
 }
 
 const getCalendars = () => {
-  $.ajax({
-    url: `${domain}/api/calendars`,
-    success: calendars => {
-      store.dispatch({ type: REDUX_ACTIONS.SET_CALENDARS, calendars });
+  chrome.storage.local.get('calendars', data => {
+    if (data.calendars) {
+      store.dispatch({ type: REDUX_ACTIONS.SET_CALENDARS, calendars: data.calendars });
+    } else {
+      $.ajax({
+        url: `${domain}/api/calendars`,
+        success: calendars => {
+          store.dispatch({ type: REDUX_ACTIONS.SET_CALENDARS, calendars });
+          chrome.storage.local.set({ calendars });
+        }
+      });
     }
-  });
+  })
+
 }
 
 const getCalendarText = calendar => {
@@ -72,10 +115,18 @@ const getCalendarText = calendar => {
       store.dispatch({ type: REDUX_ACTIONS.SET_TEXT, text: null });
       store.dispatch({ type: REDUX_ACTIONS.SET_TITLE_URL, titleUrl: "" });
       const url = `${domain}/api/texts/${calObj.url}?context=0&pad=0&commentary=0`;
-      $.ajax({
-        url,
-        success: onTextApi,
-      })
+      chrome.storage.local.get(url, data => {
+        const cached = data[url];
+        if (cached) {
+          console.log("CACHED");
+          onTextApi(cached.text, null, cached.jqXHR, true);
+        } else {
+          $.ajax({
+            url,
+            success: onTextApi,
+          });
+        }
+      });
       return;
     }
   }

@@ -6,6 +6,8 @@ const REDUX_ACTIONS = {
     SET_LANGUAGE: 'SET_LANGUAGE',
     SET_TAB: 'SET_TAB',
     SET_TITLE_URL: 'SET_TITLE_URL',
+    SET_SCROLL_POS: 'SET_SCROLL_POS',
+    SET_TOPIC: 'SET_TOPIC',
 };
 
 const DEFAULT_STATE = {
@@ -43,6 +45,16 @@ const reducer = function (state = DEFAULT_STATE, action) {
       return {
         ...state,
         titleUrl: action.titleUrl,
+      }
+    case REDUX_ACTIONS.SET_SCROLL_POS:
+      return {
+        ...state,
+        initScrollPos: action.initScrollPos,
+      }
+    case REDUX_ACTIONS.SET_TOPIC:
+      return {
+        ...state,
+        topic: action.topic,
       }
     default:
       return state;

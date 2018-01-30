@@ -5,14 +5,14 @@ import TextChoice from './TextChoice';
 const TextChooser = ({ onTabClick, calendars, tab }) => {
   let tabArray = [{title: {en: "Random", he: "אקראי"}}];
   if (!!calendars) {
-    tabArray = tabArray.concat(calendars);
+    tabArray = calendars.concat(tabArray);
   }
   return (
     <div className="text-chooser">
       {
         tabArray.map(tabObj =>
           <TextChoice
-            key={tabObj.title.en}
+            key={tabObj.title.en + "|" + tabObj.url}
             tabObj={tabObj}
             onClick={()=>{onTabClick(tabObj.title.en)}}
             isSelected={tabObj.title.en === tab}

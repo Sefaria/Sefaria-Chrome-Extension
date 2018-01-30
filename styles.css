@@ -43,6 +43,12 @@ h1 {
   width: 100%;
   display: flex;
   justify-content: center;
+  flex-direction: column;
+}
+.text-topic {
+  display: block;
+  margin-bottom: 0;
+  border-top: 4px solid #E6E5E6;
 }
 .text-title {
   text-align: center;

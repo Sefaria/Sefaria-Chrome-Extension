@@ -1,8 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const TextTitle = ({ title, titleUrl }) => (
+const TextTitle = ({ title, titleUrl, isRandom, topic, topicUrl }) => (
   <div className="text-title-outer">
+    { !!topic && isRandom ?
+      <h2 className="text-title text-topic">
+        <b><a href={ topicUrl }>{ `${topic}` }</a></b>
+      </h2> : null
+    }
     <h2 className="text-title">
       <a href={ titleUrl }>
         { title }
@@ -14,6 +19,9 @@ const TextTitle = ({ title, titleUrl }) => (
 TextTitle.propTypes = {
   title: PropTypes.string,
   title_url: PropTypes.string,
+  isRandom:  PropTypes.bool,
+  topic:     PropTypes.string,
+  topicUrl:  PropTypes.string,
 }
 
 export default TextTitle;

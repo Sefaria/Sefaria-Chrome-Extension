@@ -1,7 +1,15 @@
 var path = require('path');
 var nodeExternals = require('webpack-node-externals');
 var webpack = require('webpack');
+var DeepMerge = require('deep-merge');
 var BundleTracker = require('webpack-bundle-tracker');
+
+var deepmerge = DeepMerge(function (target, source, key) {
+    if (target instanceof Array) {
+        return [].concat(target, source);
+    }
+    return source;
+});
 
 const buildDir = './';
 var baseConfig = {
@@ -57,4 +65,27 @@ var baseConfig = {
     ]
 }
 
-module.exports = baseConfig;
+function config(overrides) {
+    return deepmerge(baseConfig, overrides || {});
+}
+
+var mainConfig = config({
+  entry: './main',
+  output: {
+      path: path.resolve(buildDir + "/bundle/"),
+      filename: 'main-bundle.js'
+  },
+  plugins: [
+      new BundleTracker({filename: './webpack-stats.json'})
+  ]
+});
+
+var backgroundConfig = config({
+  entry: './background',
+  output: {
+    path: path.resolve(buildDir + "/bundle/"),
+    filename: 'background-bundle.js'
+  }
+});
+
+module.exports = [mainConfig, backgroundConfig];

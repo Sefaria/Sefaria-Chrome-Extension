@@ -2,22 +2,30 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextChoice from './TextChoice';
 
-const TextChooser = ({ onTabClick, calendars, tab }) => {
-  let tabArray = [{title: {en: "Random", he: "אקראי"}}];
-  if (!!calendars) {
-    tabArray = calendars.concat(tabArray);
+const TextChooser = ({ onTabClick, calendarMap, calendarKeys, tab }) => {
+  let tabMap = {Random : [{title: {en: "Random", he: "אקראי"}}]};
+  let tabKeys = ["Random"];
+  if (!!calendarMap) {
+    tabMap = {
+      ...tabMap,
+      ...calendarMap,
+    };
+    tabKeys = calendarKeys.concat(tabKeys);
   }
   return (
     <div className="text-chooser">
       {
-        tabArray.map(tabObj =>
-          <TextChoice
-            key={tabObj.title.en + "|" + tabObj.url}
-            tabObj={tabObj}
-            onClick={()=>{onTabClick(tabObj.title.en)}}
-            isSelected={tabObj.title.en === tab}
-          />
-        )
+        tabKeys.map(key => {
+          const tabObj = tabMap[key][0];
+          return (
+            <TextChoice
+              key={tabObj.title.en + "|" + tabObj.url}
+              tabObj={tabObj}
+              onClick={()=>{onTabClick(tabObj.title.en)}}
+              isSelected={tabObj.title.en === tab}
+            />
+          );
+        })
       }
     </div>
   );
@@ -25,7 +33,8 @@ const TextChooser = ({ onTabClick, calendars, tab }) => {
 
 TextChooser.propTypes = {
   onTabClick: PropTypes.func.isRequired,
-  calendars:  PropTypes.array,
+  calendarMap:  PropTypes.object,
+  calendarKeys: PropTypes.array,
   tab:        PropTypes.string,
 }
 

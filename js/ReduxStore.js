@@ -11,11 +11,12 @@ const REDUX_ACTIONS = {
 };
 
 const DEFAULT_STATE = {
-    text: null,
-    calendars: [],
+    text: [],
+    calendarMap: {},
+    calendarKeys: [],
     language: "en",
     tab: "",
-    titleUrl: "",
+    titleUrl: [],
 };
 
 const reducer = function (state = DEFAULT_STATE, action) {
@@ -28,7 +29,8 @@ const reducer = function (state = DEFAULT_STATE, action) {
     case REDUX_ACTIONS.SET_CALENDARS:
       return {
         ...state,
-        calendars: action.calendars,
+        calendarMap: action.calendarMap,
+        calendarKeys: action.calendarKeys,
       }
     case REDUX_ACTIONS.SET_LANGUAGE:
       return {

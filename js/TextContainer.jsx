@@ -48,34 +48,70 @@ class TextContainer extends Component {
       __html: content,
     };
   }
+  //from: https://stackoverflow.com/questions/4856717/javascript-equivalent-of-pythons-zip-function
+  zip(...rows) {
+    return [...rows[0]].map((_,c) => rows.map(row => !!row ? row[c] : null));
+  }
 
-  render() {
-    const { text } = this.props;
-    if (!!text) {
-      let longer = "he"; let shorter = "en";
-      if (text.en.length > text.he.length) {
-        longer = "en"; shorter = "he";
-      }
-      const segments = text[longer].map((longSeg, i) => (
-        <div className="segment" key={`${text.ref}:${i+1}`}>
-          { longer === "he" || !!text.he[i] ?
-            <div className="he heSerif" dangerouslySetInnerHTML={this.getMarkup(text.he[i])}></div> : null
+  recursivelyRender(en, he, alts, title, sectionNum, segmentNum, titleUrl) {
+    if (en.constructor === String || (typeof en === "undefined")) {
+      // segment level
+      const ref = `${title} ${sectionNum}:${segmentNum}`;
+      const altEl = (typeof alts === "object" && !!alts && !Array.isArray(alts)) ?
+        (<div className={!!alts.whole ? "parashahHeader" : "parashahHeader aliyah"}>{alts.en[0]}</div>) : null;
+      return (
+        <div className="segment" key={ref}>
+          { altEl }
+          {
+            <div className="heWrapper">
+              { !!he ? <div className="he heSerif" dangerouslySetInnerHTML={this.getMarkup(he)}></div> : null }
+              { <div className="verseNumber">{segmentNum}</div> }
+            </div>
           }
-          { longer === "en" || !!text.en[i] ?
-            <div className="en enSerif" dangerouslySetInnerHTML={this.getMarkup(text.en[i])}></div> : null
+          { !!en ?
+            <div className="en enSerif" dangerouslySetInnerHTML={this.getMarkup(en)}></div> : null
           }
         </div>
-      ));
+      );
+    } else {
+      const isSectionLevel = (en.length > 0 && en[0].constructor === String) || en.length === 0;
+      let segments = [];
+      if (isSectionLevel) {
+        const titleRef = `${title} ${sectionNum}`;
+        segments.push(<TextTitle
+          isRandom={this.props.tab === "Random"}
+          key={titleRef}
+          title={titleRef}
+          titleUrl={titleUrl}
+          topic={this.props.topic}
+          topicUrl={this.props.topicUrl}
+        />);
+      }
+      const zipped = this.zip(en, he, alts);
+      for (let i = 0; i < zipped.length; i++) {
+        const [tempEn, tempHe, tempAlt] = zipped[i];
+        const currSectionNum = !isSectionLevel ? sectionNum + i : sectionNum;
+        const currSegmentNum = isSectionLevel ? segmentNum + i : segmentNum;
+        const tempRet = this.recursivelyRender(tempEn, tempHe, tempAlt, title, currSectionNum, currSegmentNum);
+        if (Array.isArray(tempRet)) {
+          segments = segments.concat(tempRet);
+        } else {
+          segments.push(tempRet);
+        }
+      }
+      return segments;
+    }
+  }
+  render() {
+    const { text, titleUrl } = this.props;
+    if (!!text) {
+      const segments = this.zip(text, titleUrl).reduce((
+        accum, [t, tempTitleUrl]) => accum.concat(
+        this.recursivelyRender(t.text, t.he, t.alts, t.indexTitle,
+        t.sections[0], !!t.sections[1] ? t.sections[1] : 1, tempTitleUrl)), []);
       return (
         <div className="text-container-outer">
           <div className="text-container">
-            <TextTitle
-              isRandom={this.props.isRandom}
-              title={this.props.title}
-              titleUrl={this.props.titleUrl}
-              topic={this.props.topic}
-              topicUrl={this.props.topicUrl}
-            />
             { segments }
           </div>
         </div>
@@ -93,14 +129,15 @@ class TextContainer extends Component {
 }
 
 TextContainer.propTypes = {
-  text: PropTypes.shape({
-    en: PropTypes.array.isRequired,
-    he: PropTypes.array.isRequired,
-  }),
+  text: PropTypes.arrayOf(PropTypes.shape({
+    text: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+    he:   PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+    alts: PropTypes.array,
+  })).isRequired,
   title:      PropTypes.string,
-  titleUrl:   PropTypes.string,
+  titleUrl:   PropTypes.array,
   initScrollPos: PropTypes.number,
-  isRandom:   PropTypes.bool.isRequired,
+  tab:        PropTypes.string.isRequired,
   topic:      PropTypes.string,
   topicUrl:   PropTypes.string,
 }

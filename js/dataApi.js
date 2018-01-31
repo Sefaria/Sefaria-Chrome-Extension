@@ -62,29 +62,46 @@ const dataApi = {
       }
     });
   },
-  getCalendarText: (calendars, calendar, cb) => {
-    for (let calObj of calendars) {
-      if (calObj.title.en === calendar) {
-        console.log("cal url", calObj.url);
-        const url = `${domain}/api/texts/${calObj.url}?context=0&pad=0&commentary=0`;
-        const siteUrl = dataApi.api2siteUrl(url);
-        chrome.storage.local.get(siteUrl, data => {
-          const cached = data[siteUrl];
-          if (cached) {
-            console.log(calendar, "from cache");
-            cb(cached.text, null, cached.jqXHR, cached.initScrollPos, true);
-          } else {
-            console.log(calendar, "NOT from cache");
-            const request = $.ajax({
-              url,
-              success: cb,
-              error: dataApi._handle_error,
-            });
-            dataApi._setRunningRequest(request, 'getCalendarText');
-          }
-        });
-        return;
+  getCalendarTextRecursive: (calObjArray, i, resultArray, cb) => {
+    const realCb = (text, status, jqXHR, initScrollPos, fromCache) => {
+      if (!!resultArray.text) { resultArray.text.push(text); }
+      else                    { resultArray.text = [text]; }
+      if (!!resultArray.status) { resultArray.status.push(status); }
+      else                      { resultArray.status = [status]; }
+      if (!!resultArray.jqXHR) { resultArray.jqXHR.push(jqXHR); }
+      else                     { resultArray.jqXHR = [jqXHR]; }
+      if (!!resultArray.fromCache) { resultArray.fromCache.push(fromCache); }
+      else                         { resultArray.fromCache = [fromCache]; }
+
+      if (i === calObjArray.length - 1 ) {
+        cb(resultArray.text, resultArray.status, resultArray.jqXHR, initScrollPos, resultArray.fromCache);
+      } else {
+        dataApi.getCalendarTextRecursive(calObjArray, i+1, resultArray, cb);
       }
+    }
+    const calObj = calObjArray[i];
+    const url = `${domain}/api/texts/${calObj.url}?context=0&pad=0&commentary=0`;
+    const siteUrl = dataApi.api2siteUrl(url);
+    chrome.storage.local.get(siteUrl, data => {
+      const cached = data[siteUrl];
+      if (!!cached) {
+        //console.log(calendar, "from cache");
+        realCb(cached.text, null, cached.jqXHR, cached.initScrollPos, true);
+      } else {
+        //console.log(calendar, "NOT from cache");
+        const request = $.ajax({
+          url,
+          success: realCb,
+          error: dataApi._handle_error,
+        });
+        dataApi._setRunningRequest(request, 'getCalendarText');
+      }
+    });
+  },
+  getCalendarText: (calendarMap, calendar, cb) => {
+    const calObjArray = calendarMap[calendar];
+    if (!!calObjArray) {
+      dataApi.getCalendarTextRecursive(calObjArray, 0, {}, cb);
     }
   },
   getRandomSource: (cb) => {

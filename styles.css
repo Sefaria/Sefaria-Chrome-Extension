@@ -87,6 +87,16 @@ h1 {
   font-size: 30px;
   font-family: 'EB Garamond', 'Crimson Text', serif;
 }
+.heWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.verseNumber {
+  font-size: 15px;
+  color: #999;
+  padding-top: 35px;
+}
 .he {
   font-size: 30px;
   padding: 20px;
@@ -138,4 +148,16 @@ h1 {
 }
 .choice.selected {
   background-color: white;
+}
+.parashahHeader {
+  text-align: center;
+  color: #8e8e8e;
+  margin: 32px 0;
+  font-size: 25px;
+  letter-spacing: 1px;
+}
+.parashahHeader.aliyah{
+  color: #bebebe;
+  font-size: 22px;
+  text-transform: uppercase;
 }

@@ -4,9 +4,9 @@
 import dataApi from './dataApi';
 import $ from 'webpack-zepto';
 
-var oldChromeVersion = !chrome.runtime;
+const oldChromeVersion = !chrome.runtime;
 var requestTimerId;
-const ALARM = 1; // minutes;
+const ALARM_MINUTES = 60;
 
 function startRequest() {
   const now = new Date();
@@ -41,12 +41,12 @@ function scheduleRequest() {
     if (requestTimerId) {
       window.clearTimeout(requestTimerId);
     }
-    requestTimerId = window.setTimeout(onAlarm, ALARM*60*1000);
+    requestTimerId = window.setTimeout(onAlarm, ALARM_MINUTES*60*1000);
   } else {
     console.log('Creating alarm');
     // Use a repeating alarm so that it fires again if there was a problem
     // setting the next alarm.
-    chrome.alarms.create('refresh', {periodInMinutes: ALARM});
+    chrome.alarms.create('refresh', {periodInMinutes: ALARM_MINUTES});
   }
 }
 

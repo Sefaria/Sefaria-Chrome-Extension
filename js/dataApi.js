@@ -84,7 +84,7 @@ const dataApi = {
     const siteUrl = dataApi.api2siteUrl(url);
     chrome.storage.local.get(siteUrl, data => {
       const cached = data[siteUrl];
-      if (!!cached) {
+      if (!!cached && false) {
         //console.log(calendar, "from cache");
         realCb(cached.text, null, cached.jqXHR, cached.initScrollPos, true);
       } else {

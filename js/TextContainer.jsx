@@ -50,11 +50,16 @@ class TextContainer extends Component {
   }
   //from: https://stackoverflow.com/questions/4856717/javascript-equivalent-of-pythons-zip-function
   zip(...rows) {
-    return [...rows[0]].map((_,c) => rows.map(row => !!row ? row[c] : null));
+    let maxLenRow;
+    for (let r of rows) {
+      if (!maxLenRow || (!!r && r.length > maxLenRow.length)) { maxLenRow = r; }
+    }
+    return [...maxLenRow].map((_,c) => rows.map(row => !!row ? row[c] : null));
   }
 
-  recursivelyRender(en, he, alts, title, sectionNum, segmentNum, titleUrl) {
-    if (en.constructor === String || (typeof en === "undefined")) {
+  recursivelyRender(en, he, alts, title, sectionNum, segmentNum, titleUrl, dontAddTitle) {
+    // dontAddTitle == true for the first iteration of recursivelyRender(). this helps in cases where you're only rendering a single segment and no sections
+    if ((typeof en === "undefined") || en.constructor === String) {
       // segment level
       const ref = `${title} ${sectionNum}:${segmentNum}`;
       const altEl = (typeof alts === "object" && !!alts && !Array.isArray(alts)) ?
@@ -76,23 +81,25 @@ class TextContainer extends Component {
     } else {
       const isSectionLevel = (en.length > 0 && en[0].constructor === String) || en.length === 0;
       let segments = [];
-      if (isSectionLevel) {
-        const titleRef = `${title} ${sectionNum}`;
-        segments.push(<TextTitle
-          isRandom={this.props.tab === "Random"}
-          key={titleRef}
-          title={titleRef}
-          titleUrl={titleUrl}
-          topic={this.props.topic}
-          topicUrl={this.props.topicUrl}
-        />);
+      if (isSectionLevel && !dontAddTitle) {
+        const titleRef = `${title} ${!!sectionNum ? sectionNum : ""}`;
+        segments.push(
+          <TextTitle
+            isRandom={this.props.tab === "Random"}
+            key={titleRef}
+            title={titleRef}
+            titleUrl={titleUrl}
+            topic={this.props.topic}
+            topicUrl={this.props.topicUrl}
+          />
+        );
       }
       const zipped = this.zip(en, he, alts);
       for (let i = 0; i < zipped.length; i++) {
         const [tempEn, tempHe, tempAlt] = zipped[i];
         const currSectionNum = !isSectionLevel ? sectionNum + i : sectionNum;
         const currSegmentNum = isSectionLevel ? segmentNum + i : segmentNum;
-        const tempRet = this.recursivelyRender(tempEn, tempHe, tempAlt, title, currSectionNum, currSegmentNum);
+        const tempRet = this.recursivelyRender(tempEn, tempHe, tempAlt, title, currSectionNum, currSegmentNum, null, dontAddTitle && i === 0);
         if (Array.isArray(tempRet)) {
           segments = segments.concat(tempRet);
         } else {
@@ -103,12 +110,25 @@ class TextContainer extends Component {
     }
   }
   render() {
-    const { text, titleUrl } = this.props;
-    if (!!text) {
-      const segments = this.zip(text, titleUrl).reduce((
-        accum, [t, tempTitleUrl]) => accum.concat(
+    const { text, titleUrl, tab } = this.props;
+    if (!!text && !!text.length) {
+      const firstSection = text[0].sections[0];
+      const firstTitle = text[0].indexTitle;
+      const titleRef = `${firstTitle} ${!!firstSection ? firstSection : ""}`;
+      let segments = [(
+        <TextTitle
+          isRandom={tab === "Random"}
+          key={titleRef}
+          title={titleRef}
+          titleUrl={titleUrl}
+          topic={this.props.topic}
+          topicUrl={this.props.topicUrl}
+        />
+      )];
+      segments = segments.concat(this.zip(text, titleUrl).reduce((
+        accum, [t, tempTitleUrl], itext) => accum.concat(
         this.recursivelyRender(t.text, t.he, t.alts, t.indexTitle,
-        t.sections[0], !!t.sections[1] ? t.sections[1] : 1, tempTitleUrl)), []);
+        t.sections[0], !!t.sections[1] ? t.sections[1] : 1, tempTitleUrl, itext === 0)), []));
       return (
         <div className="text-container-outer">
           <div className="text-container">

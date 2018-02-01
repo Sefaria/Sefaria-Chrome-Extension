@@ -24,15 +24,18 @@ function startRequest() {
 
 function requestAllCalendars(calendars) {
   for (let c of calendars) {
-    dataApi.getCalendarText(calendars, c.title.en, onGetCalendarText);
+    dataApi.getCalendarTextRecursive([c], 0, {}, onGetCalendarText);
   }
 }
 
 function onGetCalendarText(text, status, jqXHR, initScrollPos, fromCache) {
-  if (!fromCache) {
-    const siteUrl = dataApi.api2siteUrl(jqXHR.responseURL);
-    console.log("caching", siteUrl);
-    chrome.storage.local.set({[siteUrl]: { text, jqXHR: { responseURL: jqXHR.responseURL } }});
+  const siteUrl = jqXHR.map((tempJqXHR)=>dataApi.api2siteUrl(tempJqXHR.responseURL));
+  for (let i = 0; i < fromCache.length; i++) {
+    const tempFromCache = fromCache[i];
+    if (!tempFromCache) {
+      console.log("caching", siteUrl[i]);
+      chrome.storage.local.set({[siteUrl[i]]: { text: text[i], jqXHR: { responseURL: jqXHR[i].responseURL } }});
+    }
   }
 }
 

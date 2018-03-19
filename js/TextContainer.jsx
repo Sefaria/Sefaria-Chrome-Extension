@@ -66,20 +66,26 @@ class TextContainer extends Component {
     const menuLanguage = this.props.language === 'he' ? 'he' : 'en';
     if ((typeof en === "undefined") || en.constructor === String) {
       // segment level
+      en = !!en ? en.trim() : en;
+      he = !!he ? he.trim() : he;
+      const showHebrew = !!he && (this.props.language !== 'en' || !en);
       const ref = `${title} ${sectionNum}:${segmentNum}`;
       const altEl = (typeof alts === "object" && !!alts && !Array.isArray(alts)) ?
         (<div className={!!alts.whole ? "parashahHeader" : "parashahHeader aliyah"}>{alts[menuLanguage][0]}</div>) : null;
       return (
         <div className="segment" key={ref}>
           { altEl }
-          {
+          { showHebrew ?
             <div className="heWrapper">
-              { !!he && this.props.language !== 'en' ? <div className="he heSerif" dangerouslySetInnerHTML={this.getMarkup(he)}></div> : null }
-              { <div className="verseNumber">{segmentNum}</div> }
-            </div>
+              <div className="he heSerif" dangerouslySetInnerHTML={this.getMarkup(he)}></div>
+              <div className="verseNumber">{menuLanguage === 'he' ? dataApi.encodeHebrewNumeral(segmentNum) : segmentNum}</div>
+            </div> : null
           }
-          { !!en && this.props.language !== 'he' ?
-            <div className="en enSerif" dangerouslySetInnerHTML={this.getMarkup(en)}></div> : null
+          { !!en && (this.props.language !== 'he' || !he) ?
+            <div className="enWrapper">
+              { !showHebrew ? <div className="verseNumber">{segmentNum}</div> : null }
+              <div className="en enSerif" dangerouslySetInnerHTML={this.getMarkup(en)}></div>
+            </div> : null
           }
         </div>
       );

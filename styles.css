@@ -92,6 +92,11 @@ h1 {
   flex-direction: row;
   justify-content: flex-end;
 }
+.enWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
 .verseNumber {
   font-size: 15px;
   color: #999;

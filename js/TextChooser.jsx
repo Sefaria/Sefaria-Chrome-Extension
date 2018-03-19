@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextChoice from './TextChoice';
 
-const TextChooser = ({ onTabClick, calendarMap, calendarKeys, tab }) => {
+const TextChooser = ({ onTabClick, calendarMap, calendarKeys, tab, language }) => {
   let tabMap = {Random : [{title: {en: "Random", he: "אקראי"}}]};
   let tabKeys = ["Random"];
   if (!!calendarMap) {
@@ -12,6 +12,7 @@ const TextChooser = ({ onTabClick, calendarMap, calendarKeys, tab }) => {
     };
     tabKeys = calendarKeys.concat(tabKeys);
   }
+  if (language === 'he') { tabKeys.reverse(); }
   return (
     <div className="text-chooser">
       {
@@ -23,6 +24,7 @@ const TextChooser = ({ onTabClick, calendarMap, calendarKeys, tab }) => {
               tabObj={tabObj}
               onClick={()=>{onTabClick(tabObj.title.en)}}
               isSelected={tabObj.title.en === tab}
+              language={language}
             />
           );
         })
@@ -36,6 +38,7 @@ TextChooser.propTypes = {
   calendarMap:  PropTypes.object,
   calendarKeys: PropTypes.array,
   tab:        PropTypes.string,
+  language:   PropTypes.oneOf(["en", "bi", "he"]).isRequired,
 }
 
 export default TextChooser;

@@ -14,7 +14,7 @@ const DEFAULT_STATE = {
     text: [],
     calendarMap: {},
     calendarKeys: [],
-    language: "en",
+    language: "en", /* en, he, bi */
     tab: "",
     titleUrl: [],
 };

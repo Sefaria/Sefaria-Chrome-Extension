@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const TextTitle = ({ title, titleUrl, isRandom, topic, topicUrl }) => (
+const TextTitle = ({ title, titleUrl, isRandom, topic, topicUrl, language }) => (
   <div className="text-title-outer">
     { !!topic && isRandom ?
       <h2 className="text-title text-topic">
@@ -22,6 +22,7 @@ TextTitle.propTypes = {
   isRandom:  PropTypes.bool,
   topic:     PropTypes.string,
   topicUrl:  PropTypes.string,
+  language: PropTypes.oneOf(["en", "bi", "he"]).isRequired,
 }
 
 export default TextTitle;

@@ -71,7 +71,7 @@ class TextContainer extends Component {
       const showHebrew = !!he && (this.props.language !== 'en' || !en);
       const ref = `${title} ${sectionNum}:${segmentNum}`;
       const altEl = (typeof alts === "object" && !!alts && !Array.isArray(alts)) ?
-        (<div className={!!alts.whole ? "parashahHeader" : "parashahHeader aliyah"}>{alts[menuLanguage][0]}</div>) : null;
+        (<div className={`parashahHeader ${!alts.whole ? "aliyah" : ""} ${menuLanguage === 'he' ? 'heSans' : 'enSans'}`}>{alts[menuLanguage][0]}</div>) : null;
       return (
         <div className="segment" key={ref}>
           { altEl }

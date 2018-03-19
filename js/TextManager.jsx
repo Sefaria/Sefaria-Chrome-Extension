@@ -6,11 +6,19 @@ import TextChooser from './TextChooser';
 import dataApi from './dataApi';
 import { domain } from './const';
 import { REDUX_ACTIONS } from './ReduxStore';
+import LangToggle from './LangToggle';
 
-const TextManager = ({ onTabClick, title, titleUrl, text, calendarMap, calendarKeys, tab, initScrollPos, topic, topicUrl, language }) => (
+const TextManager = ({ onTabClick, title, titleUrl, text, calendarMap, calendarKeys, tab, initScrollPos, topic, topicUrl, language, setLanguage }) => (
   <div className="mega-div">
     <div>
-      <h1><a href="https://www.sefaria.org"><img className="sefaria-logo" src="icons/sefaria.svg"/></a></h1>
+      <h1 className="header">
+        <div className="headerInvisible"></div>
+        <a href="https://www.sefaria.org"><img className="sefaria-logo" src="icons/sefaria.svg"/></a>
+        <LangToggle
+          language={language}
+          setLanguage={setLanguage}
+        />
+      </h1>
       <TextChooser
         onTabClick={onTabClick}
         calendarMap={calendarMap}
@@ -60,6 +68,10 @@ const mapDispatchToProps = dispatch => ({
     dataApi.getTextForTab(tab);
     dispatch({type: REDUX_ACTIONS.SET_TAB, tab});
   },
+  setLanguage: language => {
+    if (!language) { return; }
+    dispatch({type: REDUX_ACTIONS.SET_LANGUAGE, language});
+  }
 });
 
 export default connect(

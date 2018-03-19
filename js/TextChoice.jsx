@@ -27,7 +27,7 @@ const HARD_CODED_NAMES = new Proxy({
 
 //TODO support language
 const TextChoice = ({ onClick, tabObj, isSelected, language }) => {
-  const classes = classNames({ enSerif: 1, choice: 1, selected: isSelected });
+  const classes = classNames({ enSerif: language !== 'he', heSerif: language === 'he', choice: 1, selected: isSelected });
   const menuLanguage = language === 'he' ? 'he' : 'en';
   return (
     <div onClick={onClick} className="choiceWrapper">

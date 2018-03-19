@@ -8,7 +8,7 @@ const TextTitle = ({ title, titleUrl, isRandom, topic, topicUrl, language }) => 
         <b><a href={ topicUrl }>{ `${topic}` }</a></b>
       </h2> : null
     }
-    <h2 className="text-title">
+    <h2 className={`text-title ${language === 'he' ? 'heSerif' : 'enSerif'}`}>
       <a href={ titleUrl }>
         { title }
       </a>

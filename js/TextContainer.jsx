@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'webpack-zepto';
 import { connect } from 'react-redux';
 import Component from 'react-class';
 import PropTypes from 'prop-types';
@@ -14,7 +13,7 @@ const SCROLL_DEBOUNCE_CONST = 150;
 class TextContainer extends Component {
   componentDidMount() {
     var node = ReactDOM.findDOMNode(this);
-    this.$container = $(node);
+    //this.$container = $(node);
     this.currScrollY = 0;
     node.addEventListener("scroll", this.handleScroll);
   }
@@ -29,12 +28,13 @@ class TextContainer extends Component {
       if (!!nextProps.initScrollPos) {
         console.log("scrolling to", nextProps.initScrollPos);
         //TODO this doesn't work right now for some reason
-        this.$container.scrollTop(nextProps.initialScrollPos);
+        //this.$container.scrollTop(nextProps.initialScrollPos);
       }
     }
   }
   handleScroll(e) {
-    const currY = this.$container.scrollTop();
+    //const currY = this.$container.scrollTop();
+    const currY = 0;
     if (Math.abs(currY - this.currScrollY) > SCROLL_DEBOUNCE_CONST) {
       this.currScrollY = currY;
       const key = this.props.titleUrl;

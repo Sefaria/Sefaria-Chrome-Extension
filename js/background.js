@@ -2,7 +2,6 @@
 //and https://chromium.googlesource.com/chromium/src/+/master/chrome/common/extensions/docs/examples/extensions/gmail/background.js
 
 import dataApi from './dataApi';
-import $ from 'webpack-zepto';
 
 const oldChromeVersion = !chrome.runtime;
 var requestTimerId;
@@ -28,13 +27,13 @@ function requestAllCalendars(calendars) {
   }
 }
 
-function onGetCalendarText(text, status, jqXHR, initScrollPos, fromCache) {
-  const siteUrl = jqXHR.map((tempJqXHR)=>dataApi.api2siteUrl(tempJqXHR.responseURL));
+function onGetCalendarText(text, responseURL, initScrollPos, fromCache) {
+  const siteUrl = responseURL.map(tempURL=>dataApi.api2siteUrl(tempURL));
   for (let i = 0; i < fromCache.length; i++) {
     const tempFromCache = fromCache[i];
     if (!tempFromCache) {
       console.log("caching", siteUrl[i]);
-      chrome.storage.local.set({[siteUrl[i]]: { text: text[i], jqXHR: { responseURL: jqXHR[i].responseURL } }});
+      chrome.storage.local.set({[siteUrl[i]]: { text: text[i], responseURL: responseURL[i], }});
     }
   }
 }

@@ -1,8 +1,9 @@
-import $ from 'webpack-zepto';
+import AbortController from "abort-controller";
 import { REDUX_ACTIONS, store } from './ReduxStore';
 import { domain } from './const'
 
 const dataApi = {
+  DISABLE_CACHE: false,
   init: (cb) => {
     chrome.storage.local.get(['tab', 'lastCleared', 'cachedCalendarDay', 'calendars'] , data => {
       const now = new Date();
@@ -32,8 +33,8 @@ const dataApi = {
   },
   _currentRequest: null,
   _currentRequestName: null,
-  _setRunningRequest: (ajax, name) => {
-    dataApi._currentRequest = ajax;
+  _setRunningRequest: (controller, name) => {
+    dataApi._currentRequest = controller;
     dataApi._currentRequestName = name;
   },
   abortRunningRequest: () => {
@@ -48,34 +49,33 @@ const dataApi = {
     const date = (new Date()).toDateString();
     const calendarKey = 'calendars' + date;
     chrome.storage.local.get(calendarKey, data => {
-      if (data[calendarKey]) {
+      if (data[calendarKey] && !dataApi.DISABLE_CACHE) {
         if (cb) { cb(data[calendarKey]); }
       } else {
-        const request = $.ajax({
-          url: `${domain}/api/calendars`,
-          success: calendars => {
-            chrome.storage.local.set({ [calendarKey]: calendars });
-            if (cb) { cb(calendars); }
-          },
-          error: dataApi._handle_error,
-        });
-        dataApi._setRunningRequest(request, 'getCalendars');
+        const controller = new AbortController();
+        const signal = controller.signal;
+        fetch(`${domain}/api/calendars`, {method: 'GET', signal})
+        .then(dataApi._handle_response)
+        .then(calendars => {
+          chrome.storage.local.set({ [calendarKey]: calendars });
+          if (cb) { cb(calendars); }
+        })
+        .catch(dataApi._handle_error);
+        dataApi._setRunningRequest(controller, 'getCalendars');
       }
     });
   },
   getCalendarTextRecursive: (calObjArray, i, resultArray, cb) => {
-    const realCb = (text, status, jqXHR, initScrollPos, fromCache) => {
+    const realCb = (text, responseURL, initScrollPos, fromCache) => {
       if (!!resultArray.text) { resultArray.text.push(text); }
       else                    { resultArray.text = [text]; }
-      if (!!resultArray.status) { resultArray.status.push(status); }
-      else                      { resultArray.status = [status]; }
-      if (!!resultArray.jqXHR) { resultArray.jqXHR.push(jqXHR); }
-      else                     { resultArray.jqXHR = [jqXHR]; }
+      if (!!resultArray.responseURL) { resultArray.responseURL.push(responseURL); }
+      else                           { resultArray.responseURL = [responseURL]; }
       if (!!resultArray.fromCache) { resultArray.fromCache.push(fromCache); }
       else                         { resultArray.fromCache = [fromCache]; }
 
       if (i === calObjArray.length - 1 ) {
-        cb(resultArray.text, resultArray.status, resultArray.jqXHR, initScrollPos, resultArray.fromCache);
+        cb(resultArray.text, resultArray.responseURL, initScrollPos, resultArray.fromCache);
       } else {
         dataApi.getCalendarTextRecursive(calObjArray, i+1, resultArray, cb);
       }
@@ -85,17 +85,22 @@ const dataApi = {
     const siteUrl = dataApi.api2siteUrl(url);
     chrome.storage.local.get(siteUrl, data => {
       const cached = data[siteUrl];
-      if (!!cached) {
+      if (!!cached && !dataApi.DISABLE_CACHE) {
         //console.log(calendar, "from cache");
-        realCb(cached.text, null, cached.jqXHR, cached.initScrollPos, true);
+        realCb(cached.text, cached.responseURL, cached.initScrollPos, true);
       } else {
         //console.log(calendar, "NOT from cache");
-        const request = $.ajax({
-          url,
-          success: realCb,
-          error: dataApi._handle_error,
-        });
-        dataApi._setRunningRequest(request, 'getCalendarText');
+        const controller = new AbortController();
+        const signal = controller.signal;
+        var responseURL;
+        fetch(url, {method: 'GET', signal})
+        .then(response => {
+          responseURL = response.url;
+          return dataApi._handle_response(response);
+        })
+        .then(text=> { realCb(text, responseURL); })
+        .catch(dataApi._handle_error);
+        dataApi._setRunningRequest(controller, 'getCalendarText');
       }
     });
   },
@@ -106,20 +111,28 @@ const dataApi = {
     }
   },
   getRandomSource: cb => {
-    const request = $.ajax({
-      url: `${domain}/api/texts/random-by-topic`,
-      success: (data) => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    var responseURL;
+    var topic;
+    fetch(`${domain}/api/texts/random-by-topic`, {method: 'GET', signal})
+      .then(dataApi._handle_response)
+      .then(data => {
+        topic = data.topic;
+        const controller = new AbortController();
+        const signal = controller.signal;
         const url = `${domain}/api/texts/${!!data.url ? data.url : data.ref}?context=0&pad=0&commentary=0`;
-        const request = $.ajax({
-          url,
-          success: cb.bind(null, data.topic),
-          error: dataApi._handle_error,
-        });
-        dataApi._setRunningRequest(request, 'random get text api');
-      },
-      error: dataApi._handle_error,
-    });
-    dataApi._setRunningRequest(request, 'random-by-topic api');
+        fetch(url, {method: 'GET', signal})
+        .then(response => {
+          responseURL = response.url;
+          return dataApi._handle_response(response);
+        })
+        .then(text=>{ cb(text, topic, responseURL); })
+        .catch(dataApi._handle_error);
+        dataApi._setRunningRequest(controller, 'random get text api');
+      })
+      .catch(dataApi._handle_error);
+    dataApi._setRunningRequest(controller, 'random-by-topic api');
   },
   getTextForTab: tab => {
     const currTab = store.getState().tab;
@@ -144,33 +157,37 @@ const dataApi = {
     }
     return {calendarMap, calendarKeys};
   },
-  onTextApi: (text, status, jqXHR, initScrollPos, fromCache) => {
+  onTextApi: (text, responseURL, initScrollPos, fromCache) => {
     store.dispatch({ type: REDUX_ACTIONS.SET_SCROLL_POS, initScrollPos });
     store.dispatch({type: REDUX_ACTIONS.SET_TEXT, text});
-    const siteUrl = jqXHR.map((tempJqXHR)=>dataApi.api2siteUrl(tempJqXHR.responseURL));
+    const siteUrl = responseURL.map(tempURL=>dataApi.api2siteUrl(tempURL));
     store.dispatch({ type: REDUX_ACTIONS.SET_TITLE_URL, titleUrl: siteUrl });
     for (let i = 0; i < fromCache.length; i++) {
       const tempFromCache = fromCache[i];
       if (!tempFromCache) {
-        chrome.storage.local.set({[siteUrl[i]]: { text: text[i], jqXHR: { responseURL: jqXHR[i].responseURL } }});
+        chrome.storage.local.set({[siteUrl[i]]: { text: text[i], responseURL: responseURL[i] }});
       }
     }
   },
-  onRandomApi: (topic, text, status, jqXHR, initScrollPos, fromCache) => {
+  onRandomApi: (text, topic, responseURL, initScrollPos, fromCache) => {
     store.dispatch({ type: REDUX_ACTIONS.SET_TOPIC, topic: topic });
-    dataApi.onTextApi([text], [status], [jqXHR], initScrollPos, [fromCache]);
+    dataApi.onTextApi([text], [responseURL], initScrollPos, [fromCache]);
   },
   api2siteUrl: url => (
     //take out api and remove all url params
     url.replace('/api/texts','').replace(/\?[^/]+$/,'')
   ),
-  _handle_error: (jqXHR, textStatus, errorThrown) => {
-    if (textStatus == "abort") {
+  _handle_error: error => {
+    if (error == "abort") {
       console.log("abort abort!!");
       return;
     } else {
-      console.log("actual error", textStatus);
+      console.log(error);
     }
+  },
+  _handle_response: response => {
+    if (!response.ok) { throw Error(response.statusText); }
+    else { return response.json(); }
   },
   encodeHebrewNumeral: n => {
     // Takes an integer and returns a string encoding it as a Hebrew numeral.
@@ -283,11 +300,8 @@ const dataApi = {
     1200: "\u05EA\u05EA\u05EA"
   },
   sendSlackMessage: (text) => {
-    $.ajax({
-      url: "https://hooks.slack.com/services/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",
-      type: "POST",
-      data: JSON.stringify({ text }),
-    });
+    //UNTESTED
+    fetch("https://hooks.slack.com/services/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", {method: 'POST', body: JSON.stringify({ text })});
   },
 }
 

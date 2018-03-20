@@ -10,7 +10,7 @@ import dataApi from './dataApi';
 //Initialize App
 //chrome.storage.local.clear(()=>{ console.log("cleared"); });
 dataApi.init((data) => {
-  if (!!data.calendars) {
+  if (!!data.calendars && !dataApi.DISABLE_CACHE) {
     store.dispatch({ type: REDUX_ACTIONS.SET_CALENDARS, ...dataApi.mapCalendars(data.calendars) });
   }
 

@@ -7,13 +7,10 @@ import TextTitle from './TextTitle';
 import { domain } from './const';
 import dataApi from './dataApi';
 
-
-const SCROLL_DEBOUNCE_CONST = 150;
-
+const SCROLL_DEBOUNCE_CONST = 20;
 class TextContainer extends Component {
   componentDidMount() {
-    var node = ReactDOM.findDOMNode(this);
-    //this.$container = $(node);
+    const node = ReactDOM.findDOMNode(this);
     this.currScrollY = 0;
     node.addEventListener("scroll", this.handleScroll);
   }
@@ -26,15 +23,13 @@ class TextContainer extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.initScrollPos !== nextProps.initScrollPos) {
       if (!!nextProps.initScrollPos) {
-        console.log("scrolling to", nextProps.initScrollPos);
-        //TODO this doesn't work right now for some reason
-        //this.$container.scrollTop(nextProps.initialScrollPos);
+        this.scrollToPos = nextProps.initScrollPos;
       }
     }
   }
   handleScroll(e) {
-    //const currY = this.$container.scrollTop();
-    const currY = 0;
+    const currY = e.target.scrollTop;
+    //console.log(currY);
     if (Math.abs(currY - this.currScrollY) > SCROLL_DEBOUNCE_CONST) {
       this.currScrollY = currY;
       const key = this.props.titleUrl;
@@ -149,8 +144,14 @@ class TextContainer extends Component {
         this.recursivelyRender(t.text, t.he, t.alts, t.indexTitle, t.heIndexTitle, t.addressTypes[0],
         t.sections[0], !!t.sections[1] ? t.sections[1] : 1, tempTitleUrl, itext === 0)), []));
       return (
-        <div className="text-container-outer">
-          <div className="text-container">
+        <div className="text-container-outer" ref={ref=>{
+            if (this.scrollToPos && ref) {
+              ref.scrollTop = this.scrollToPos;
+              console.log("scrolling to", this.scrollToPos);
+              this.scrollToPos = null;
+            }
+          }}>
+          <div className="text-container"  >
             { segments }
           </div>
         </div>
@@ -158,7 +159,7 @@ class TextContainer extends Component {
     } else {
       return (
         <div className="text-container-outer">
-          <div className="text-container-loading">
+          <div className="text-container-loading" >
             { "Loading..." }
           </div>
         </div>

@@ -104,7 +104,7 @@ class TextContainer extends Component {
       const zipped = this.zip(en, he, alts);
       for (let i = 0; i < zipped.length; i++) {
         const [tempEn, tempHe, tempAlt] = zipped[i];
-        const currSectionNum = !isSectionLevel ? sectionNum + i : sectionNum;
+        const currSectionNum = !isSectionLevel ? (addressType === 'Talmud' ? dataApi.incrementHebrewDaf(sectionNum, i) : sectionNum + i) : sectionNum;
         const currSegmentNum = isSectionLevel ? segmentNum + i : segmentNum;
         const tempRet = this.recursivelyRender(tempEn, tempHe, tempAlt, title, heTitle, null, currSectionNum, currSegmentNum, null, dontAddTitle && i === 0);
         if (Array.isArray(tempRet)) {
@@ -127,7 +127,7 @@ class TextContainer extends Component {
   render() {
     const { text, titleUrl, tab, language } = this.props;
     if (!!text && !!text.length) {
-      const titleRef = this.makeRef(text[0].indexTitle, text[0].heIndexTitle, text[0].addressTypes[0], text[0].sections[0]);
+      const titleRef = this.makeRef(text[0].indexTitle, text[0].heIndexTitle, text[0].addressTypes ? text[0].addressTypes[0] : null, text[0].sections[0]);
       let segments = [(
         <TextTitle
           isRandom={tab === "Random"}

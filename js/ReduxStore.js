@@ -14,7 +14,7 @@ const DEFAULT_STATE = {
     text: [],
     calendarMap: {},
     calendarKeys: [],
-    language: "he", /* en, he, bi */
+    language: "bi", /* en, he, bi */
     tab: "",
     titleUrl: [],
 };
@@ -33,6 +33,7 @@ const reducer = function (state = DEFAULT_STATE, action) {
         calendarKeys: action.calendarKeys,
       }
     case REDUX_ACTIONS.SET_LANGUAGE:
+      chrome.storage.local.set({'language': action.language});
       return {
         ...state,
         language: action.language,

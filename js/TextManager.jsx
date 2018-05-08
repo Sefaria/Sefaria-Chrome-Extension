@@ -13,7 +13,7 @@ const TextManager = ({ onTabClick, title, titleUrl, text, calendarMap, calendarK
     <div>
       <h1 className="header">
         <div className="headerInvisible"></div>
-        <a href="https://www.sefaria.org"><img className="sefaria-logo" src="icons/sefaria.svg"/></a>
+        <a className="sefaria-logo-link" href="https://www.sefaria.org"><img className="sefaria-logo" src="icons/sefaria.svg"/></a>
         <LangToggle
           language={language}
           setLanguage={setLanguage}

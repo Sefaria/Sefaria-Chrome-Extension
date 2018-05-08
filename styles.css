@@ -1,12 +1,16 @@
 * {
   box-sizing: border-box;
 }
+@font-face {
+    font-family: "Taamey Frank";
+    src: url(fonts/TaameyFrankCLM-Medium.ttf) format("truetype");
+}
 .enSerif {
   font-family: 'EB Garamond', 'Crimson Text', serif;
   direction: ltr;
 }
 .heSerif {
-  font-family: "Frank Ruehl Libre", "Taamey Frank", "Times New Roman", serif;
+  font-family: "Taamey Frank", "Times New Roman", serif;
   direction: rtl;
 }
 .enSans {
@@ -34,6 +38,10 @@ h1 {
   text-align: center;
   font-size: 40px;
   margin: 0;
+}
+.sefaria-logo-link {
+  display: flex;
+  align-items: center;
 }
 .sefaria-logo {
   height: 22px;
@@ -122,7 +130,6 @@ h1 {
   line-height: 50px;
 }
 .text-chooser {
-  margin-top: 15px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -198,20 +205,22 @@ h1 {
 
 .langToggle .aye {
   font-size: 30px;
-  margin-bottom: -15px;
 
 }
 .langToggle .aleph {
   font-size: 38px;
   padding-left: 6px;
-  margin-bottom: -10px;
+  margin-bottom: -8px;
 
 }
 .header {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 .headerInvisible {
   flex: 1;
+  margin-left: 40px;
 }

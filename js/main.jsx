@@ -14,8 +14,10 @@ dataApi.init((data) => {
     store.dispatch({ type: REDUX_ACTIONS.SET_CALENDARS, ...dataApi.mapCalendars(data.calendars) });
   }
 
-  const initTab = !!data.tab ? data.tab : "Random";
+  const initTab = data.tab || "Random";
+  const initLanguage = data.language || 'bi';
   store.dispatch({type: REDUX_ACTIONS.SET_TAB, tab: initTab});
+  store.dispatch({type: REDUX_ACTIONS.SET_LANGUAGE, language: initLanguage});
   dataApi.getCalendars((data) => {
     store.dispatch({ type: REDUX_ACTIONS.SET_CALENDARS, ...dataApi.mapCalendars(data) });
     dataApi.getTextForTab(initTab);

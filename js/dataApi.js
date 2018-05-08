@@ -1,11 +1,11 @@
-import AbortController from "abort-controller";
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import { REDUX_ACTIONS, store } from './ReduxStore';
 import { domain } from './const'
 
 const dataApi = {
   DISABLE_CACHE: false,
   init: (cb) => {
-    chrome.storage.local.get(['tab', 'lastCleared', 'cachedCalendarDay', 'calendars'] , data => {
+    chrome.storage.local.get(['tab', 'lastCleared', 'cachedCalendarDay', 'calendars', 'language'] , data => {
       const now = new Date();
       if (!data.lastCleared) {
         // init lastCleared var
@@ -81,7 +81,12 @@ const dataApi = {
       }
     }
     const calObj = calObjArray[i];
-    const url = `${domain}/api/texts/${calObj.url}?context=0&pad=0&commentary=0`;
+    let urlRef = calObj.url;
+    if (calObjArray[i].title.en === 'Daf Yomi') {
+      const daf = calObjArray[i].url.substring(calObjArray[i].url.lastIndexOf('.')+1)
+      urlRef = calObjArray[i].url + `-${dataApi.incrementHebrewDaf(daf, 1)}`;
+    }
+    const url = `${domain}/api/texts/${urlRef}?context=0&pad=0&commentary=0`;
     const siteUrl = dataApi.api2siteUrl(url);
     chrome.storage.local.get(siteUrl, data => {
       const cached = data[siteUrl];
@@ -178,7 +183,7 @@ const dataApi = {
     url.replace('/api/texts','').replace(/\?[^/]+$/,'')
   ),
   _handle_error: error => {
-    if (error == "abort") {
+    if (error.name == "AbortError") {
       console.log("abort abort!!");
       return;
     } else {
@@ -236,6 +241,12 @@ const dataApi = {
       a = {a: 1, b: 2}[a];
       return dataApi.encodeHebrewNumeral(n) + " " + dataApi.encodeHebrewNumeral(a);
     }
+  },
+  incrementHebrewDaf: (daf, increment) => {
+    const num = parseInt(daf.substring(0,daf.length-1)) + Math.floor(increment/2);
+    let letter = daf.substring(daf.length-1);
+    letter = increment % 2 ?  (letter === 'a' ? 'b' : 'a') : letter;
+    return `${num}${letter}`;
   },
   hebrewNumerals: {
     "\u05D0": 1,

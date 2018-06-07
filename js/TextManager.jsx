@@ -6,19 +6,15 @@ import TextChooser from './TextChooser';
 import dataApi from './dataApi';
 import { domain } from './const';
 import { REDUX_ACTIONS } from './ReduxStore';
-import LangToggle from './LangToggle';
+import Header from './Header';
 
 const TextManager = ({ onTabClick, title, titleUrl, text, calendarMap, calendarKeys, tab, initScrollPos, topic, topicUrl, language, setLanguage }) => (
   <div className="mega-div">
     <div>
-      <h1 className="header">
-        <div className="headerInvisible"></div>
-        <a className="sefaria-logo-link" href="https://www.sefaria.org"><img className="sefaria-logo" src="icons/sefaria.svg"/></a>
-        <LangToggle
-          language={language}
-          setLanguage={setLanguage}
-        />
-      </h1>
+      <Header
+        language={language}
+        setLanguage={setLanguage}
+      />
       <TextChooser
         onTabClick={onTabClick}
         calendarMap={calendarMap}

@@ -3,7 +3,7 @@
 
   "name": "Sefaria",
   "description": "Learn Torah daily!",
-  "version": "0.99",
+  "version": "1.00",
   "chrome_url_overrides" : {
     "newtab": "tab.html"
   },
@@ -12,7 +12,11 @@
     "48": "icons/icon48.png"
   },
   "browser_action": {
-    "default_icon": "icons/icon48.png"
+    "default_icon": {
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "TorahTab by Sefaria"
   },
   "background": {
     "scripts": ["bundle/background-bundle.js"],

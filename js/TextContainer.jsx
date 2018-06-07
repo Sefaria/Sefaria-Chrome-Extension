@@ -64,25 +64,24 @@ class TextContainer extends Component {
       en = !!en ? en.trim() : en;
       he = !!he ? he.trim() : he;
       const showHebrew = !!he && (this.props.language !== 'en' || !en);
+      const showEnglish = !!en && (this.props.language !== 'he' || !he);
       const ref = `${title} ${sectionNum}:${segmentNum}`;
       const altEl = (typeof alts === "object" && !!alts && !Array.isArray(alts)) ?
         (<div className={`parashahHeader ${!alts.whole ? "aliyah" : ""} ${menuLanguage === 'he' ? 'heSans' : 'enSans'}`}>{alts[menuLanguage][0]}</div>) : null;
       return (
-        <div className="segment" key={ref}>
-          { altEl }
-          { showHebrew ?
-            <div className="heWrapper">
-              <div className="he heSerif" dangerouslySetInnerHTML={this.getMarkup(he)}></div>
-              <div className="verseNumber">{menuLanguage === 'he' ? dataApi.encodeHebrewNumeral(segmentNum) : segmentNum}</div>
-            </div> : null
-          }
-          { !!en && (this.props.language !== 'he' || !he) ?
-            <div className="enWrapper">
-              { !showHebrew ? <div className="verseNumber">{segmentNum}</div> : null }
-              <div className="en enSerif" dangerouslySetInnerHTML={this.getMarkup(en)}></div>
-            </div> : null
-          }
-        </div>
+        <a href={dataApi.siteUrl(title, sectionNum, segmentNum)} className="segmentOuter" key={ref}>
+          <div className="segment">
+            { altEl }
+            <div className="segmentInner">
+              <div className={`verseNumber verseNumberEn ${!showHebrew ? "" : "hidden"}`}>{segmentNum}</div>
+              <div className="segmentText">
+                { showHebrew  ? <div className={`he heSerif ${showHebrew && showEnglish ? "bi" : ""}`} dangerouslySetInnerHTML={this.getMarkup(he)}></div> : null }
+                { showEnglish ? <div className={`en enSerif ${showHebrew && showEnglish ? "bi" : ""}`} dangerouslySetInnerHTML={this.getMarkup(en)}></div> : null }
+              </div>
+              <div className={`verseNumber ${showHebrew ? "" : "hidden"}`}>{menuLanguage === 'he' ? dataApi.encodeHebrewNumeral(segmentNum) : segmentNum}</div>
+            </div>
+          </div>
+        </a>
       );
     } else {
       const isSectionLevel = (en.length > 0 && en[0].constructor === String) || en.length === 0;

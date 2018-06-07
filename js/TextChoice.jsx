@@ -25,7 +25,6 @@ const HARD_CODED_NAMES = new Proxy({
   },
 }, handler);
 
-//TODO support language
 const TextChoice = ({ onClick, tabObj, isSelected, language }) => {
   const classes = classNames({ enSerif: language !== 'he', heSerif: language === 'he', choice: 1, selected: isSelected });
   const menuLanguage = language === 'he' ? 'he' : 'en';

@@ -44,7 +44,7 @@ palette.categoryColors = {
 
   "Random":             palette.colors.darkblue,
   "Parashat Hashavua":  palette.colors.darkteal,
-  "Haftara":            palette.colors.darkteal,
+  "Haftarah":           palette.colors.darkteal,
   "Daf Yomi":           palette.colors.yellow,
   "929":                palette.colors.darkblue,
   "Daily Mishnah":      palette.colors.lightblue,

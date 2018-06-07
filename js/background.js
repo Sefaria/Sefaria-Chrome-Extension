@@ -33,7 +33,7 @@ function onGetCalendarText(text, responseURL, initScrollPos, fromCache) {
     const tempFromCache = fromCache[i];
     if (!tempFromCache) {
       console.log("caching", siteUrl[i]);
-      chrome.storage.local.set({[siteUrl[i]]: { text: text[i], responseURL: responseURL[i], }});
+      dataApi.saveToLocal({[siteUrl[i]]: { text: text[i], responseURL: responseURL[i], }});
     }
   }
 }

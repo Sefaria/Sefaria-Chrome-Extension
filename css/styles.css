@@ -3,7 +3,7 @@
 }
 @font-face {
     font-family: "Taamey Frank";
-    src: url(fonts/TaameyFrankCLM-Medium.ttf) format("truetype");
+    src: url(/fonts/TaameyFrankCLM-Medium.ttf) format("truetype");
 }
 .enSerif {
   font-family: 'EB Garamond', 'Crimson Text', serif;
@@ -64,7 +64,6 @@ h1 {
 .text-topic {
   display: block;
   margin-bottom: 0;
-  border-top: 4px solid #E6E5E6;
 }
 .text-title {
   text-align: center;
@@ -74,13 +73,11 @@ h1 {
   width: fit-content;
   align-self: center;
   border-bottom: 4px solid #E6E5E6;
+  cursor: pointer;
 }
 .text-title a {
   text-decoration: none;
   color: black;
-}
-.text-title a:hover {
-  text-decoration: underline;
 }
 .text-container-outer {
   overflow-y: auto;
@@ -100,6 +97,27 @@ h1 {
   width: 100%;
   max-width: 700px;
   font-size: 30px;
+  padding-bottom: 100px;
+}
+.segmentOuter {
+  text-decoration: none;
+  color: black;
+}
+.segment {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+.segment:hover {
+  background-color: #e9e9e7;
+}
+.segmentInner {
+  display: flex;
+  flex-direction: row;
+}
+.segmentText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 .heWrapper {
   display: flex;
@@ -114,7 +132,10 @@ h1 {
 .verseNumber {
   font-size: 15px;
   color: #999;
-  padding-top: 35px;
+  padding-top: 32px;
+}
+.verseNumberEn {
+  padding-top: 37px;
 }
 .he {
   font-size: 30px;
@@ -129,13 +150,19 @@ h1 {
   text-align: justify;
   line-height: 50px;
 }
+.he.bi {
+  padding: 20px 20px 5px 20px;
+}
+.en.bi {
+  padding: 5px 20px 20px 20px;
+  color: #666;
+}
 .text-chooser {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: stretch;
   background-color: #F9F9F7;
-  border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
 }
 .categoryColorLine {
@@ -179,9 +206,9 @@ h1 {
 .langToggle {
   display: flex;
   flex-direction: row;
-  flex: 1;
   justify-content: flex-end;
   margin-right: 40px;
+  flex: 1;
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */
@@ -204,23 +231,52 @@ h1 {
 }
 
 .langToggle .aye {
-  font-size: 30px;
+  font-size: 24px;
 
 }
 .langToggle .aleph {
-  font-size: 38px;
+  font-size: 30px;
   padding-left: 6px;
-  margin-bottom: -8px;
+  margin-bottom: -7px;
 
 }
 .header {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  height: 54px;
+  align-items: center;
+}
+.headerButtonsLeft {
+  margin-left: 40px;
+  display: flex;
+  justify-content: flex-start;
+  flex: 1;
+}
+.menuButton {
+  font-size: 24px;
+  line-height: 24px;
+  padding-left: 6px;
+  text-decoration: none;
+  color: #999;
+  padding-right: 10px;
+}
+.menuButton.search {
+  font-size: 17px;
+}
+.searchInput {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  color: black;
+  font-size:  18px;
+  font-family: "adobe-garamond-pro", Georgia, serif;
+  vertical-align: 1px;
+  margin: 0;
 }
 .headerInvisible {
   flex: 1;
   margin-left: 40px;
+}
+.hidden {
+  visibility:hidden;
 }

@@ -1,4 +1,5 @@
 import { combineReducers, createStore } from 'redux';
+import dataApi from './dataApi';
 
 const REDUX_ACTIONS = {
     SET_TEXT: 'SET_TEXT',
@@ -33,13 +34,13 @@ const reducer = function (state = DEFAULT_STATE, action) {
         calendarKeys: action.calendarKeys,
       }
     case REDUX_ACTIONS.SET_LANGUAGE:
-      chrome.storage.local.set({'language': action.language});
+      dataApi.saveToLocal({'language': action.language});
       return {
         ...state,
         language: action.language,
       }
     case REDUX_ACTIONS.SET_TAB:
-      chrome.storage.local.set({'tab': action.tab});
+      dataApi.saveToLocal({'tab': action.tab});
       return {
         ...state,
         tab: action.tab,
@@ -65,4 +66,4 @@ const reducer = function (state = DEFAULT_STATE, action) {
 };
 
 let store = createStore(reducer);
-export { REDUX_ACTIONS, store };
+export { REDUX_ACTIONS, store, DEFAULT_STATE };

@@ -1,5 +1,5 @@
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
-import { REDUX_ACTIONS, store } from './ReduxStore';
+import { REDUX_ACTIONS, store, DEFAULT_STATE } from './ReduxStore';
 import { domain } from './const'
 
 const dataApi = {
@@ -7,24 +7,14 @@ const dataApi = {
   init: (cb) => {
     chrome.storage.local.get(['tab', 'lastCleared', 'cachedCalendarDay', 'calendars', 'language'] , data => {
       const now = new Date();
-      if (!data.lastCleared) {
-        // init lastCleared var
-        chrome.storage.local.set({lastCleared: new Date()});
-      } else {
-        const lastCleared = new Date(data.lastCleared);
-        const daysTilSecondShabbat = (7 - lastCleared.getDay()) + 7;
-        const expirationMSecs = daysTilSecondShabbat * 24 * 60 * 60 * 1000;
-        if ((now.getTime() - lastCleared.getTime()) > expirationMSecs) {
-          chrome.storage.local.clear();
-        }
-      }
+
 
       if (!data.cachedCalendarDay) {
-        chrome.storage.local.set({cachedCalendarDay: (new Date()).getDay()})
+        dataApi.saveToLocal({cachedCalendarDay: (new Date()).getDay()})
       } else if (now.getDay() !== data.cachedCalendarDay) {
         chrome.storage.local.remove('calendars');
         data.calendars = null; // this datum is too old
-        chrome.storage.local.set({cachedCalendarDay: now.getDay()});
+        dataApi.saveToLocal({cachedCalendarDay: now.getDay()});
       }
 
       cb(data);
@@ -57,7 +47,7 @@ const dataApi = {
         fetch(`${domain}/api/calendars`, {method: 'GET', signal})
         .then(dataApi._handle_response)
         .then(calendars => {
-          chrome.storage.local.set({ [calendarKey]: calendars });
+          dataApi.saveToLocal({ [calendarKey]: calendars });
           if (cb) { cb(calendars); }
         })
         .catch(dataApi._handle_error);
@@ -170,7 +160,7 @@ const dataApi = {
     for (let i = 0; i < fromCache.length; i++) {
       const tempFromCache = fromCache[i];
       if (!tempFromCache) {
-        chrome.storage.local.set({[siteUrl[i]]: { text: text[i], responseURL: responseURL[i] }});
+        dataApi.saveToLocal({[siteUrl[i]]: { text: text[i], responseURL: responseURL[i] }});
       }
     }
   },
@@ -182,6 +172,10 @@ const dataApi = {
     //take out api and remove all url params
     url.replace('/api/texts','').replace(/\?[^/]+$/,'')
   ),
+  siteUrl: (title, section, segment) => {
+    const siteRef = `${title}.${section}.${segment}`.replace(/:/g,'.');
+    return `https://www.sefaria.org/${siteRef}?with=all`;
+  },
   _handle_error: error => {
     if (error.name == "AbortError") {
       console.log("abort abort!!");
@@ -314,6 +308,35 @@ const dataApi = {
     //UNTESTED
     fetch("https://hooks.slack.com/services/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", {method: 'POST', body: JSON.stringify({ text })});
   },
+  saveToLocal: (obj, cb, _i=0) => {
+    if (_i > 5) {
+      console.error("Trying too many times to save", obj);
+      return;
+    }
+    chrome.storage.local.set(obj, dataApi._saveToLocalCB.bind(null, obj, cb, _i))
+  },
+  _saveToLocalCB: (obj, cb, _i) => {
+    if (chrome.runtime.lastError) {
+      dataApi.clearLocal(() => {
+        dataApi.saveToLocal(obj, cb, _i + 1);
+      });
+    } else {
+      if (cb) cb();
+    }
+  },
+  clearLocal: () => {
+    // clear the main portion of local storage while retaining user preferences
+    const importantValues = {
+      "cachedCalendarDay": null,
+      "language": DEFAULT_STATE.language,
+      "tab": DEFAULT_STATE.tab,
+    };
+    chrome.storage.local.get(importantValues, data => {
+      chrome.storage.local.clear(() => {
+        chrome.storage.local.set(data);
+      });
+    });
+  }
 }
 
 export default dataApi;

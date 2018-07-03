@@ -3,7 +3,7 @@
 
   "name": "Sefaria",
   "description": "Learn Torah daily!",
-  "version": "1.00",
+  "version": "1.0.1",
   "chrome_url_overrides" : {
     "newtab": "tab.html"
   },
@@ -22,6 +22,7 @@
     "scripts": ["bundle/background-bundle.js"],
     "persistent": false
   },
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
     "alarms"

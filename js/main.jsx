@@ -1,4 +1,5 @@
 //zip -r chrome.zip Sefaria-Chrome-Extension -x '*node_modules*'
+//zip -r -FS ../firefox.zip * -x '*node_modules*' 'js/*' '\.DS_Store'
 
 import React from 'react';
 import ReactDOM from 'react-dom';

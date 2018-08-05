@@ -47,6 +47,7 @@ const dataApi = {
         fetch(`${domain}/api/calendars`, {method: 'GET', signal})
         .then(dataApi._handle_response)
         .then(calendars => {
+          calendars = !!calendars.calendar_items ? calendars.calendar_items : calendars;  // future-proof for updated calendars api
           dataApi.saveToLocal({ [calendarKey]: calendars });
           if (cb) { cb(calendars); }
         })

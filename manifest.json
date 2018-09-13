@@ -8,13 +8,19 @@
     "newtab": "tab.html"
   },
   "icons": {
-    "128": "icons/icon128.png",
+    "192": "icons/icon196.png",
+    "144": "icons/icon144.png",
+    "96": "icons/icon96.png",
+    "72": "icons/icon72.png",
     "48": "icons/icon48.png"
   },
   "browser_action": {
     "default_icon": {
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+        "192": "icons/icon196.png",
+        "144": "icons/icon144.png",
+        "96": "icons/icon96.png",
+        "72": "icons/icon72.png",
+        "48": "icons/icon48.png"
     },
     "default_title": "TorahTab by Sefaria"
   },

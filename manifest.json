@@ -3,21 +3,23 @@
 
   "name": "Sefaria",
   "description": "Learn Torah daily!",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "chrome_url_overrides" : {
     "newtab": "tab.html"
   },
   "icons": {
-    "192": "icons/icon196.png",
+    "192": "icons/icon192.png",
     "144": "icons/icon144.png",
+    "128": "icons/icon128.png",
     "96": "icons/icon96.png",
     "72": "icons/icon72.png",
     "48": "icons/icon48.png"
   },
   "browser_action": {
     "default_icon": {
-        "192": "icons/icon196.png",
+        "192": "icons/icon192.png",
         "144": "icons/icon144.png",
+        "128": "icons/icon128.png",
         "96": "icons/icon96.png",
         "72": "icons/icon72.png",
         "48": "icons/icon48.png"

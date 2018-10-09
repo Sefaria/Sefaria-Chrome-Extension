@@ -102,6 +102,13 @@ class TextContainer extends Component {
       }
       const zipped = this.zip(en, he, alts);
       for (let i = 0; i < zipped.length; i++) {
+        if (!isSectionLevel) {
+          console.log('yo', segmentNum);
+        }
+        if (!isSectionLevel && i > 0) {
+          // segmentNum only applies for the first section. reset it afterwards
+          segmentNum = 1;
+        }
         const [tempEn, tempHe, tempAlt] = zipped[i];
         const currSectionNum = !isSectionLevel ? (addressType === 'Talmud' ? dataApi.incrementHebrewDaf(sectionNum, i) : sectionNum + i) : sectionNum;
         const currSegmentNum = isSectionLevel ? segmentNum + i : segmentNum;

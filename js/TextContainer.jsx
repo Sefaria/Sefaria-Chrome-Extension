@@ -59,7 +59,10 @@ class TextContainer extends Component {
   recursivelyRender(en, he, alts, title, heTitle, addressType, sectionNum, segmentNum, titleUrl, dontAddTitle) {
     // dontAddTitle == true for the first iteration of recursivelyRender(). this helps in cases where you're only rendering a single segment and no sections
     const menuLanguage = this.props.language === 'he' ? 'he' : 'en';
-    if ((typeof en === "undefined") || en.constructor === String) {
+    const enIsSegmentLevel = typeof en === 'string';
+    const heIsSegmentLevel = typeof he === 'string';
+    const isSegmentLevel = enIsSegmentLevel || heIsSegmentLevel;
+    if (isSegmentLevel) {
       // segment level
       en = !!en ? en.trim() : en;
       he = !!he ? he.trim() : he;
@@ -84,7 +87,9 @@ class TextContainer extends Component {
         </a>
       );
     } else {
-      const isSectionLevel = (en.length > 0 && en[0].constructor === String) || en.length === 0;
+      const enIsSectionLevel = typeof en !== 'undefined' && (en.length > 0 && (typeof en[0] === 'string'));
+      const heIsSectionLevel = typeof he !== 'undefined' && (he.length > 0 && (typeof he[0] === 'string'));
+      const isSectionLevel = enIsSectionLevel || heIsSectionLevel;
       let segments = [];
       if (isSectionLevel && !dontAddTitle) {
         const titleRef = this.makeRef(title, heTitle, addressType, sectionNum); //`${title} ${!!sectionNum ? sectionNum : ""}`;

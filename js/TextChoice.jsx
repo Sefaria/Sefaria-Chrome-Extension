@@ -23,6 +23,10 @@ const HARD_CODED_NAMES = new Proxy({
     en: "Parasha",
     he: "פרשה",
   },
+  "Daily Rambam (3)": {
+    en: "Rambam (3)",
+    he: "רמב״ם (3)",
+  },
 }, handler);
 
 const TextChoice = ({ onClick, tabObj, isSelected, language }) => {

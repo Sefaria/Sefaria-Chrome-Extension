@@ -73,7 +73,7 @@ const dataApi = {
     }
     const calObj = calObjArray[i];
     let urlRef = calObj.url;
-    if (calObjArray[i].title.en === 'Daf Yomi') {
+    if (calObjArray[i].title.en === 'Daf Yomi' || calObjArray[i].title.en === 'Daf a Week') {
       const daf = calObjArray[i].url.substring(calObjArray[i].url.lastIndexOf('.')+1)
       urlRef = calObjArray[i].url + `-${dataApi.incrementHebrewDaf(daf, 1)}`;
     }

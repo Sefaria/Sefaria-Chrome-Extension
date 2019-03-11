@@ -3,7 +3,7 @@
 
   "name": "Sefaria",
   "description": "Learn Torah daily!",
-  "version": "1.2.3",
+  "version": "1.2.34",
   "chrome_url_overrides" : {
     "newtab": "tab.html"
   },

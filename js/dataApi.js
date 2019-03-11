@@ -9,12 +9,12 @@ const dataApi = {
       const now = new Date();
 
 
-      if (!data.cachedCalendarDay) {
-        dataApi.saveToLocal({cachedCalendarDay: (new Date()).getDay()})
-      } else if (now.getDay() !== data.cachedCalendarDay) {
+      if (!data.cachedCalendarDay && data.cached) {
+        dataApi.saveToLocal({cachedCalendarDay: (new Date()).toDateString()})
+      } else if (now.toDateString() !== data.cachedCalendarDay) {
         chrome.storage.local.remove('calendars');
         data.calendars = null; // this datum is too old
-        dataApi.saveToLocal({cachedCalendarDay: now.getDay()});
+        dataApi.saveToLocal({cachedCalendarDay: now.toDateString()});
       }
 
       cb(data);

@@ -136,43 +136,53 @@ class TextContainer extends Component {
     }
   }
   render() {
+
     const { text, titleUrl, tab, language } = this.props;
-    if (!!text && !!text.length) {
-      const titleRef = this.makeRef(text[0].indexTitle, text[0].heIndexTitle, text[0].addressTypes ? text[0].addressTypes[0] : null, text[0].sections[0]);
-      let segments = [(
-        <TextTitle
-          isRandom={tab === "Random"}
-          key={titleRef}
-          title={titleRef}
-          titleUrl={titleUrl}
-          topic={this.props.topic}
-          topicUrl={this.props.topicUrl}
-          language={language}
-        />
-      )];
-      segments = segments.concat(this.zip(text, titleUrl).reduce((
-        accum, [t, tempTitleUrl], itext) => accum.concat(
-        this.recursivelyRender(t.text, t.he, t.alts, t.indexTitle, t.heIndexTitle, t.addressTypes[0],
-        t.sections[0], !!t.sections[1] ? t.sections[1] : 1, tempTitleUrl, itext === 0)), []));
-      return (
-        <div className="text-container-outer" ref={ref=>{
-            if (this.scrollToPos && ref) {
-              ref.scrollTop = this.scrollToPos;
-              console.log("scrolling to", this.scrollToPos);
-              this.scrollToPos = null;
-            }
-          }}>
-          <div className="text-container"  >
-            { segments }
+    try {
+      if (!!text && !!text.length) {
+        const titleRef = this.makeRef(text[0].indexTitle, text[0].heIndexTitle, text[0].addressTypes ? text[0].addressTypes[0] : null, text[0].sections[0]);
+        let segments = [(
+          <TextTitle
+            isRandom={tab === "Random"}
+            key={titleRef}
+            title={titleRef}
+            titleUrl={titleUrl}
+            topic={this.props.topic}
+            topicUrl={this.props.topicUrl}
+            language={language}
+          />
+        )];
+        segments = segments.concat(this.zip(text, titleUrl).reduce((
+          accum, [t, tempTitleUrl], itext) => accum.concat(
+          this.recursivelyRender(t.text, t.he, t.alts, t.indexTitle, t.heIndexTitle, t.addressTypes[0],
+          t.sections[0], !!t.sections[1] ? t.sections[1] : 1, tempTitleUrl, itext === 0)), []));
+        return (
+          <div className="text-container-outer" ref={ref=>{
+              if (this.scrollToPos && ref) {
+                ref.scrollTop = this.scrollToPos;
+                console.log("scrolling to", this.scrollToPos);
+                this.scrollToPos = null;
+              }
+            }}>
+            <div className="text-container"  >
+              { segments }
+            </div>
           </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="text-container-outer">
-          <div className="text-container-loading" >
-            { "Loading..." }
+        );
+      } else {
+        return (
+          <div className="text-container-outer">
+            <div className="text-container-loading" >
+              { "Loading..." }
+            </div>
           </div>
+        );
+      }
+    } catch (e) {
+      console.log(text, titleUrl, tab, language);
+      return (
+        <div className="text-container-loading">
+          {`Error loading '${tab}'`}
         </div>
       );
     }

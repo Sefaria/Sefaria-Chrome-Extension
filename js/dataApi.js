@@ -305,10 +305,6 @@ const dataApi = {
     1100: "\u05EA\u05EA\u05E9",
     1200: "\u05EA\u05EA\u05EA"
   },
-  sendSlackMessage: (text) => {
-    //UNTESTED
-    fetch("https://hooks.slack.com/services/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", {method: 'POST', body: JSON.stringify({ text })});
-  },
   saveToLocal: (obj, cb, _i=0) => {
     if (_i > 5) {
       console.error("Trying too many times to save", obj);

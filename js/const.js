@@ -1,3 +1,3 @@
-const domain = "https://www.sefaria.org";
+const domain =  "https://www.sefaria.org";
 
 export { domain };

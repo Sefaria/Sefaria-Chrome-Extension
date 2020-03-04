@@ -199,7 +199,12 @@ TextContainer.propTypes = {
   titleUrl:   PropTypes.array,
   initScrollPos: PropTypes.number,
   tab:        PropTypes.string.isRequired,
-  topic:      PropTypes.string,
+  topic:      PropTypes.shape({
+    primaryTitle: PropTypes.shape({
+      en: PropTypes.string,
+      he: PropTypes.string,
+    })
+  }),
   topicUrl:   PropTypes.string,
   language:   PropTypes.oneOf(["en", "bi", "he"]).isRequired,
 }
@@ -213,7 +218,7 @@ const mapStateToProps = state => ({
   tab: state.tab,
   initScrollPos: state.initScrollPos,
   topic: state.topic,
-  topicUrl: `${domain}/topics/${state.topic}`,
+  topicUrl: `${domain}/topics/${state.topic && (state.topic.slug || state.topic)}`,
   language: state.language,
 });
 

@@ -175,7 +175,7 @@ const dataApi = {
   ),
   siteUrl: (title, section, segment) => {
     const siteRef = `${title}.${section}.${segment}`.replace(/:/g,'.');
-    return `https://www.sefaria.org/${siteRef}?with=all`;
+    return `${domain}/${siteRef}?with=all`;
   },
   _handle_error: error => {
     if (error.name == "AbortError") {

@@ -61,8 +61,14 @@ var baseConfig = {
         filename: 'main-bundle.js'
     },
     plugins: [
-        new BundleTracker({filename: './webpack-stats.json'})
-    ]
+        new BundleTracker({filename: './webpack-stats.json'}),
+        new webpack.ProvidePlugin({
+          global: require.resolve('./global.js')
+        })
+    ],
+    node: {
+        global: false
+    }
 }
 
 function config(overrides) {

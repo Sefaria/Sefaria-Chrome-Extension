@@ -73,10 +73,6 @@ const dataApi = {
     }
     const calObj = calObjArray[i];
     let urlRef = calObj.url;
-    if (calObjArray[i].title.en === 'Daf Yomi' || calObjArray[i].title.en === 'Daf a Week') {
-      const daf = calObjArray[i].url.substring(calObjArray[i].url.lastIndexOf('.')+1)
-      urlRef = calObjArray[i].url + `-${dataApi.incrementHebrewDaf(daf, 1)}`;
-    }
     const url = `${domain}/api/texts/${urlRef}?context=0&pad=0&commentary=0`;
     const siteUrl = dataApi.api2siteUrl(url);
     chrome.storage.local.get(siteUrl, data => {

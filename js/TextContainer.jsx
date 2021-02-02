@@ -107,9 +107,6 @@ class TextContainer extends Component {
       }
       const zipped = this.zip(en, he, alts);
       for (let i = 0; i < zipped.length; i++) {
-        if (!isSectionLevel) {
-          console.log('yo', segmentNum);
-        }
         if (!isSectionLevel && i > 0) {
           // segmentNum only applies for the first section. reset it afterwards
           segmentNum = 1;
@@ -160,7 +157,6 @@ class TextContainer extends Component {
           <div className="text-container-outer" ref={ref=>{
               if (this.scrollToPos && ref) {
                 ref.scrollTop = this.scrollToPos;
-                console.log("scrolling to", this.scrollToPos);
                 this.scrollToPos = null;
               }
             }}>
@@ -179,7 +175,6 @@ class TextContainer extends Component {
         );
       }
     } catch (e) {
-      console.log(text, titleUrl, tab, language);
       return (
         <div className="text-container-loading">
           {`Error loading '${tab}'`}

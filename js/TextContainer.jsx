@@ -20,13 +20,14 @@ class TextContainer extends Component {
     node.removeEventListener("scroll", this.handleScroll);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.initScrollPos !== nextProps.initScrollPos) {
-      if (!!nextProps.initScrollPos) {
-        this.scrollToPos = nextProps.initScrollPos;
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.initScrollPos !== prevProps.initScrollPos) {
+      if (!!this.props.initScrollPos) {
+        this.scrollToPos = this.props.initScrollPos;
       }
     }
   }
+
   handleScroll(e) {
     const currY = e.target.scrollTop;
     //console.log(currY);

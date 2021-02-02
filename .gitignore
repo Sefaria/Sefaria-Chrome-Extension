@@ -49,5 +49,11 @@ venv/
 # Webpack #
 ###########
 bundle/
+bundle_prod/
+bundle_dev/
 webpack-stats.*\.json
 webpack-stats.json
+
+# Custom #
+workspace.code-workspace
+extension_outputs

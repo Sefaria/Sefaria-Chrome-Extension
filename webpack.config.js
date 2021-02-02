@@ -17,7 +17,7 @@ var baseConfig = {
         new webpack.optimize.ModuleConcatenationPlugin() // puts all module code in one scope which is supposed to speed up run-time
     ],
     module: {
-        loaders: [
+        rules: [
             //a regexp that tells webpack use the following loaders on all
             //.js and .jsx files
             {
@@ -27,7 +27,7 @@ var baseConfig = {
                 exclude: /node_modules/,
                 //use the babel loader
                 loader: 'babel-loader',
-                query: {
+                options: {
                     //specify that we will be dealing with React code
                     presets: ['react', 'es2015'],
                     plugins: ["transform-es2015-destructuring", "transform-object-rest-spread"]
@@ -70,7 +70,7 @@ function config(overrides) {
 var mainConfig = config({
   entry: './main',
   output: {
-      path: path.resolve(buildDir + "/bundle/"),
+      path: path.resolve(buildDir + "/bundle_prod/"),
       filename: 'main-bundle.js'
   },
   plugins: [
@@ -81,9 +81,26 @@ var mainConfig = config({
 var backgroundConfig = config({
   entry: './background',
   output: {
-    path: path.resolve(buildDir + "/bundle/"),
+    path: path.resolve(buildDir + "/bundle_prod/"),
     filename: 'background-bundle.js'
   }
 });
 
-module.exports = [mainConfig, backgroundConfig];
+var mainDevConfig = merge(mainConfig, {
+    mode: "development",
+    output: {
+      path: path.resolve(buildDir + "/bundle_dev/"),
+      filename: 'main-bundle.js'
+    }
+});
+var backgroundDevConfig = merge(backgroundConfig, {
+    mode: "development",
+    output: {
+      path: path.resolve(buildDir + "/bundle_dev/"),
+      filename: 'background-bundle.js'
+    }
+});
+var mainProdConfig = merge(mainConfig, { mode: "production" });
+var backgroundProdConfig = merge(backgroundConfig, { mode: "production" });
+
+module.exports = [mainDevConfig, backgroundDevConfig, mainProdConfig, backgroundProdConfig];

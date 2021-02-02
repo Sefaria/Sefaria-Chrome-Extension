@@ -133,7 +133,6 @@ class TextContainer extends Component {
     }
   }
   render() {
-
     const { text, titleUrl, tab, language } = this.props;
     try {
       if (!!text && !!text.length) {

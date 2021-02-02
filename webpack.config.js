@@ -1,15 +1,7 @@
 var path = require('path');
-var nodeExternals = require('webpack-node-externals');
 var webpack = require('webpack');
-var DeepMerge = require('deep-merge');
+var merge = require('merge-deep');
 var BundleTracker = require('webpack-bundle-tracker');
-
-var deepmerge = DeepMerge(function (target, source, key) {
-    if (target instanceof Array) {
-        return [].concat(target, source);
-    }
-    return source;
-});
 
 const buildDir = './';
 var baseConfig = {
@@ -72,7 +64,7 @@ var baseConfig = {
 }
 
 function config(overrides) {
-    return deepmerge(baseConfig, overrides || {});
+    return merge(baseConfig, overrides || {});
 }
 
 var mainConfig = config({

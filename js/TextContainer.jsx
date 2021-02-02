@@ -175,6 +175,7 @@ class TextContainer extends Component {
         );
       }
     } catch (e) {
+      console.error(e);
       return (
         <div className="text-container-loading">
           {`Error loading '${tab}'`}

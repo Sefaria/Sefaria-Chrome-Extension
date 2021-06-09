@@ -46,12 +46,14 @@ palette.categoryColors = {
   "Parashat Hashavua":  palette.colors.darkteal,
   "Haftarah":           palette.colors.darkteal,
   "Daf Yomi":           palette.colors.yellow,
-  "929":                palette.colors.darkblue,
+  "929":                palette.colors.darkteal,
   "Daily Mishnah":      palette.colors.lightblue,
   "Daily Rambam":       palette.colors.red,
   "Daily Rambam (3)":   palette.colors.red,
   "Daf a Week":         palette.colors.yellow,
   "Halakhah Yomit":     palette.colors.red,
+  "Arukh HaShulchan Yomi": palette.colors.red,
+  "Tanakh Yomi": palette.colors.darkteal,
 };
 palette.categoryColor = function(cat) {
   if (cat in palette.categoryColors) {

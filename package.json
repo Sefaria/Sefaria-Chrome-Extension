@@ -1,7 +1,7 @@
 {
   "name": "sefaria-chrome-extension",
   "version": "1.0.0",
-  "description": "Sefaria's Chrome extension to view daily texts",
+  "description": "Sefaria's Chrome and Firefox extension to view daily texts, dubbed TorahTab",
   "main": "script.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
@@ -12,7 +12,8 @@
     "Sefaria",
     "Jewish",
     "Torah",
-    "Extension"
+    "Extension",
+    "TorahTab"
   ],
   "author": "Sefaria",
   "license": "GPL-3.0",

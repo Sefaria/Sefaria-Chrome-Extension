@@ -48,6 +48,7 @@ const dataApi = {
         .then(dataApi._handle_response)
         .then(calendars => {
           calendars = !!calendars.calendar_items ? calendars.calendar_items : calendars;  // future-proof for updated calendars api
+          calendars = calendars.filter((x) => x.title.en !== 'Chok LeYisrael');
           dataApi.saveToLocal({ [calendarKey]: calendars });
           if (cb) { cb(calendars); }
         })

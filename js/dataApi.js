@@ -74,7 +74,7 @@ const dataApi = {
     }
     const calObj = calObjArray[i];
     let urlRef = calObj.url;
-    const url = `${domain}/api/texts/${urlRef}?context=0&pad=0&commentary=0`;
+    const url = `${domain}/api/texts/${urlRef}?context=0&pad=0&commentary=0&stripItags=1`;
     const siteUrl = dataApi.api2siteUrl(url);
     chrome.storage.local.get(siteUrl, data => {
       const cached = data[siteUrl];

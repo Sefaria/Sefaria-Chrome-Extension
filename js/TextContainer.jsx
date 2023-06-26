@@ -45,9 +45,8 @@ class TextContainer extends Component {
   }
 
   getMarkup(content) {
-    const regex = /<sup\sclass.*?>.{1,}<\/sup><i\sclass=.*?>.{1,}<\/i>/gi;
     return {
-      __html: content.replace(regex, '')
+      __html: content
     };
   }
   //from: https://stackoverflow.com/questions/4856717/javascript-equivalent-of-pythons-zip-function

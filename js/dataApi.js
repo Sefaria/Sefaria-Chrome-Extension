@@ -48,6 +48,7 @@ const dataApi = {
         .then(dataApi._handle_response)
         .then(calendars => {
           calendars = !!calendars.calendar_items ? calendars.calendar_items : calendars;  // future-proof for updated calendars api
+          calendars = calendars.filter((x) => x.title.en !== 'Chok LeYisrael');
           dataApi.saveToLocal({ [calendarKey]: calendars });
           if (cb) { cb(calendars); }
         })
@@ -73,7 +74,7 @@ const dataApi = {
     }
     const calObj = calObjArray[i];
     let urlRef = calObj.url;
-    const url = `${domain}/api/texts/${urlRef}?context=0&pad=0&commentary=0`;
+    const url = `${domain}/api/texts/${urlRef}?context=0&pad=0&commentary=0&stripItags=1`;
     const siteUrl = dataApi.api2siteUrl(url);
     chrome.storage.local.get(siteUrl, data => {
       const cached = data[siteUrl];

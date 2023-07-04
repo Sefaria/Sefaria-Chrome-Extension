@@ -7,6 +7,7 @@ import TextTitle from './TextTitle';
 import { domain } from './const';
 import dataApi from './dataApi';
 
+
 const SCROLL_DEBOUNCE_CONST = 20;
 class TextContainer extends Component {
   componentDidMount() {
@@ -45,7 +46,7 @@ class TextContainer extends Component {
 
   getMarkup(content) {
     return {
-      __html: content,
+      __html: content
     };
   }
   //from: https://stackoverflow.com/questions/4856717/javascript-equivalent-of-pythons-zip-function
@@ -69,11 +70,12 @@ class TextContainer extends Component {
       he = !!he ? he.trim() : he;
       const showHebrew = !!he && (this.props.language !== 'en' || !en);
       const showEnglish = !!en && (this.props.language !== 'he' || !he);
-      const ref = `${title} ${sectionNum}:${segmentNum}`;
+      const nodeTitle = `${titleUrl.split('/').pop().split('.')[0]}`;
+      const ref = `${nodeTitle} ${sectionNum}:${segmentNum}`;
       const altEl = (typeof alts === "object" && !!alts && !Array.isArray(alts)) ?
         (<div className={`parashahHeader ${!alts.whole ? "aliyah" : ""} ${menuLanguage === 'he' ? 'heSans' : 'enSans'}`}>{alts[menuLanguage][0]}</div>) : null;
       return (
-        <a href={dataApi.siteUrl(title, sectionNum, segmentNum)} className="segmentOuter" key={ref}>
+        <a href={dataApi.siteUrl(nodeTitle, sectionNum, segmentNum)} className="segmentOuter" key={ref}>
           <div className="segment">
             { altEl }
             <div className="segmentInner">
@@ -115,7 +117,7 @@ class TextContainer extends Component {
         const [tempEn, tempHe, tempAlt] = zipped[i];
         const currSectionNum = !isSectionLevel ? (addressType === 'Talmud' ? dataApi.incrementHebrewDaf(sectionNum, i) : sectionNum + i) : sectionNum;
         const currSegmentNum = isSectionLevel ? segmentNum + i : segmentNum;
-        const tempRet = this.recursivelyRender(tempEn, tempHe, tempAlt, title, heTitle, null, currSectionNum, currSegmentNum, null, dontAddTitle && i === 0);
+        const tempRet = this.recursivelyRender(tempEn, tempHe, tempAlt, title, heTitle, null, currSectionNum, currSegmentNum, titleUrl, dontAddTitle && i === 0);
         if (Array.isArray(tempRet)) {
           segments = segments.concat(tempRet);
         } else {
@@ -136,7 +138,7 @@ class TextContainer extends Component {
   render() {
     const { text, titleUrl, tab, language } = this.props;
     try {
-      if (!!text && !!text.length) {
+      if (!!text && !!text.length && !!titleUrl && !!titleUrl.length) {
         const titleRef = this.makeRef(text[0].indexTitle, text[0].heIndexTitle, text[0].addressTypes ? text[0].addressTypes[0] : null, text[0].sections[0]);
         let segments = [(
           <TextTitle

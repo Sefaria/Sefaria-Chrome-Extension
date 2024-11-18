@@ -1,21 +1,20 @@
 {
-  "manifest_version": 2,
-
+  "manifest_version": 3,
   "name": "TorahTab by Sefaria",
   "description": "Learn Torah daily!",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "chrome_url_overrides" : {
     "newtab": "tab.html"
   },
   "icons": {
-    "192": "icons/icon192.png", 
+    "192": "icons/icon192.png",
     "144": "icons/icon144.png",
     "128": "icons/icon128.png",
     "96": "icons/icon96.png",
     "72": "icons/icon72.png",
     "48": "icons/icon48.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
         "192": "icons/icon192.png",
         "144": "icons/icon144.png",
@@ -27,10 +26,12 @@
     "default_title": "TorahTab by Sefaria"
   },
   "background": {
-    "scripts": ["bundle/background-bundle.js"],
-    "persistent": false
+    "service_worker": "bundle/background-bundle.js",
+    "scripts": ["bundle/background-bundle.js"]
   },
-  "content_security_policy": "script-src 'self' object-src 'self'",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "permissions": [
     "storage",
     "alarms"

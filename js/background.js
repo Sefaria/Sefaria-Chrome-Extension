@@ -1,17 +1,12 @@
-//based on https://developer.chrome.com/extensions/event_pages
-//and https://chromium.googlesource.com/chromium/src/+/master/chrome/common/extensions/docs/examples/extensions/gmail/background.js
+//Originally based on https://developer.chrome.com/extensions/event_pages, now migrated to https://developer.chrome.com/docs/extensions/develop/concepts/service-workers
 
 import dataApi from './dataApi';
 
-const oldChromeVersion = !chrome.runtime;
-var requestTimerId;
 const ALARM_MINUTES = 60;
 
 function startRequest() {
-  const now = new Date();
-  //DEBUG dataApi.sendSlackMessage(`Starting request at  ${now.toString()}`);
   dataApi.init((data) => {
-    if (!!data.calendars) {
+    if (data.calendars) {
       requestAllCalendars(data.calendars);
     } else {
       dataApi.getCalendars((data) => {
@@ -22,78 +17,45 @@ function startRequest() {
 }
 
 function requestAllCalendars(calendars) {
-  for (let c of calendars) {
-    dataApi.getCalendarTextRecursive([c], 0, {}, onGetCalendarText);
+  for (let calendar of calendars) {
+    dataApi.getCalendarTextRecursive([calendar], 0, {}, onGetCalendarText);
   }
 }
 
 function onGetCalendarText(text, responseURL, initScrollPos, fromCache) {
-  const siteUrl = responseURL.map(tempURL=>dataApi.api2siteUrl(tempURL));
+  const siteUrls = responseURL.map(dataApi.api2siteUrl);
   for (let i = 0; i < fromCache.length; i++) {
-    const tempFromCache = fromCache[i];
-    if (!tempFromCache) {
-      console.log("caching", siteUrl[i]);
-      dataApi.saveToLocal({[siteUrl[i]]: { text: text[i], responseURL: responseURL[i], }});
+    if (!fromCache[i]) {
+      dataApi.saveToLocal({ [siteUrls[i]]: { text: text[i], responseURL: responseURL[i] } });
     }
   }
 }
 
 function scheduleRequest() {
-  if (oldChromeVersion) {
-    if (requestTimerId) {
-      window.clearTimeout(requestTimerId);
-    }
-    requestTimerId = window.setTimeout(onAlarm, ALARM_MINUTES*60*1000);
-  } else {
-    console.log('Creating alarm');
-    // Use a repeating alarm so that it fires again if there was a problem
-    // setting the next alarm.
-    chrome.alarms.create('refresh', {periodInMinutes: ALARM_MINUTES});
+  chrome.alarms.create('refresh', { periodInMinutes: ALARM_MINUTES });
+}
+
+function onAlarm(alarm) {
+  if (alarm.name === 'refresh') {
+    startRequest();
+  } else if (alarm.name === 'watchdog') {
+    onWatchdog();
   }
 }
 
-function onInit() {
-  scheduleRequest();
-}
-function onAlarm(alarm) {
-  console.log('Got alarm', alarm);
-  // |alarm| can be undefined because onAlarm also gets called from
-  // window.setTimeout on old chrome versions.
-  if (alarm && alarm.name == 'watchdog') {
-    onWatchdog();
-  } else {
-    startRequest();
-  }
-}
 function onWatchdog() {
-  chrome.alarms.get('refresh', function(alarm) {
-    if (alarm) {
-      console.log('Refresh alarm exists. Yay.');
-    } else {
-      console.log('Refresh alarm doesn\'t exist!? ' +
-                  'Refreshing now and rescheduling.');
+  chrome.alarms.get('refresh', (alarm) => {
+    if (!alarm) {
       startRequest();
     }
   });
 }
 
-if (oldChromeVersion) {
-  onInit();
-} else {
-  chrome.runtime.onInstalled.addListener(onInit);
-  chrome.alarms.onAlarm.addListener(onAlarm);
-}
+chrome.runtime.onInstalled.addListener(scheduleRequest);
+chrome.alarms.onAlarm.addListener(onAlarm);
 
-if (chrome.runtime && chrome.runtime.onStartup) {
-  console.log('Starting browser... updating icon.');
-  startRequest();
+if (chrome.runtime.onStartup) {
+  chrome.runtime.onStartup.addListener(startRequest);
 } else {
-  // This hack is needed because Chrome 22 does not persist browserAction icon
-  // state, and also doesn't expose onStartup. So the icon always starts out in
-  // wrong state. We don't actually use onStartup except as a clue that we're
-  // in a version of Chrome that has this problem.
-  chrome.windows.onCreated.addListener(function() {
-    console.log('Window created... updating icon.');
-    startRequest();
-  });
+  chrome.windows.onCreated.addListener(startRequest);
 }

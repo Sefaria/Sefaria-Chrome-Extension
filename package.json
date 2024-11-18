@@ -4,8 +4,8 @@
   "description": "Sefaria's Chrome and Firefox extension to view daily texts, dubbed TorahTab",
   "main": "script.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "watch": "webpack --config webpack.config.js --watch",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.config.js",
+    "watch": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.config.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

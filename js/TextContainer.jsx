@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import Component from 'react-class';
 import PropTypes from 'prop-types';
 import TextTitle from './TextTitle';
 import { domain } from './const';
@@ -9,7 +8,7 @@ import dataApi from './dataApi';
 
 
 const SCROLL_DEBOUNCE_CONST = 20;
-class TextContainer extends Component {
+class TextContainer extends React.Component {
   componentDidMount() {
     const node = ReactDOM.findDOMNode(this);
     this.currScrollY = 0;

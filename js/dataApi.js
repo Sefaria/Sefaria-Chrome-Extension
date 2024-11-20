@@ -1,17 +1,15 @@
-import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import { REDUX_ACTIONS, store, DEFAULT_STATE } from './ReduxStore';
 import { domain } from './const'
 
 const dataApi = {
   DISABLE_CACHE: false,
   init: (cb) => {
-    chrome.storage.local.get(['tab', 'lastCleared', 'cachedCalendarDay', 'calendars', 'language'] , data => {
+    chrome.storage.local.get(['tab', 'lastCleared', 'cachedCalendarDay', 'calendars', 'language'], data => {
       const now = new Date();
 
-
-      if (!data.cachedCalendarDay && data.cached) {
-        dataApi.saveToLocal({cachedCalendarDay: (new Date()).toDateString()})
-      } else if (now.toDateString() !== data.cachedCalendarDay) {
+      if (!data.cachedCalendarDay) {  // If there's no cached day recorded
+        dataApi.saveToLocal({cachedCalendarDay: now.toDateString()});
+      } else if (now.toDateString() !== data.cachedCalendarDay) {  // If it's a new day
         chrome.storage.local.remove('calendars');
         data.calendars = null; // this datum is too old
         dataApi.saveToLocal({cachedCalendarDay: now.toDateString()});
@@ -19,7 +17,6 @@ const dataApi = {
 
       cb(data);
     });
-
   },
   _currentRequest: null,
   _currentRequestName: null,
@@ -85,7 +82,7 @@ const dataApi = {
         //console.log(calendar, "NOT from cache");
         const controller = new AbortController();
         const signal = controller.signal;
-        var responseURL;
+        let responseURL;
         fetch(url, {method: 'GET', signal})
         .then(response => {
           responseURL = response.url;
@@ -106,8 +103,7 @@ const dataApi = {
   getRandomSource: cb => {
     const controller = new AbortController();
     const signal = controller.signal;
-    var responseURL;
-    var topic;
+    let responseURL, topic;
     fetch(`${domain}/api/texts/random-by-topic`, {method: 'GET', signal})
       .then(dataApi._handle_response)
       .then(data => {
@@ -193,11 +189,11 @@ const dataApi = {
       return n;
     }
 
-    var values = dataApi.hebrewNumerals;
+    const values = dataApi.hebrewNumerals;
 
-    var heb = "";
+    let heb = "";
     if (n >= 100) {
-      var hundreds = n - (n % 100);
+      let hundreds = n - (n % 100);
       heb += values[hundreds];
       n -= hundreds;
     }
@@ -206,7 +202,7 @@ const dataApi = {
       heb += values[n];
     } else {
       if (n >= 10) {
-        var tens = n - (n % 10);
+        let tens = n - (n % 10);
         heb += values[tens];
         n -= tens;
       }
@@ -220,11 +216,10 @@ const dataApi = {
 
     return heb;
   },
-  encodeHebrewDaf: (daf, form) => {
+  encodeHebrewDaf: (daf, form = "short") => {
     // Ruturns Hebrew daf strings from "32b"
-    var form = form || "short"
-    var n = parseInt(daf.slice(0,-1));
-    var a = daf.slice(-1);
+    let n = parseInt(daf.slice(0,-1));
+    let a = daf.slice(-1);
     if (form === "short") {
       a = {a: ".", b: ":"}[a];
       return dataApi.encodeHebrewNumeral(n) + a;
@@ -302,34 +297,30 @@ const dataApi = {
     1100: "\u05EA\u05EA\u05E9",
     1200: "\u05EA\u05EA\u05EA"
   },
-  saveToLocal: (obj, cb, _i=0) => {
-    if (_i > 5) {
-      console.error("Trying too many times to save", obj);
-      return;
-    }
-    chrome.storage.local.set(obj, dataApi._saveToLocalCB.bind(null, obj, cb, _i))
+  saveToLocal: async (obj, cb, _i = 0) => {
+      if (_i > 5) {
+          console.error("Trying too many times to save", obj);
+          return;
+      }
+      try {
+          await chrome.storage.local.set(obj);
+          if (cb) cb();
+      } catch (error) {
+          await dataApi.clearLocal();
+          await dataApi.saveToLocal(obj, cb, _i + 1);
+      }
   },
-  _saveToLocalCB: (obj, cb, _i) => {
-    if (chrome.runtime.lastError) {
-      dataApi.clearLocal(() => {
-        dataApi.saveToLocal(obj, cb, _i + 1);
-      });
-    } else {
-      if (cb) cb();
-    }
-  },
-  clearLocal: () => {
-    // clear the main portion of local storage while retaining user preferences
-    const importantValues = {
-      "cachedCalendarDay": null,
-      "language": DEFAULT_STATE.language,
-      "tab": DEFAULT_STATE.tab,
-    };
-    chrome.storage.local.get(importantValues, data => {
-      chrome.storage.local.clear(() => {
-        chrome.storage.local.set(data);
-      });
-    });
+
+  clearLocal: async () => {
+      // clear the main portion of local storage while retaining user preferences
+      const importantValues = {
+          "cachedCalendarDay": null,
+          "language": DEFAULT_STATE.language,
+          "tab": DEFAULT_STATE.tab,
+      };
+      const data = await chrome.storage.local.get(importantValues);
+      await chrome.storage.local.clear();
+      await chrome.storage.local.set(data);
   }
 }
 
